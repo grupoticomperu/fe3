@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Recibo</title>
+    <style>
+        /* Estilos CSS para el recibo */
+        body {
+            font-family: Arial, sans-serif;
+            width: 8cm; /* Ancho fijo de 8 cm */
+        }
+        .container {
+            padding: 30px;
+        }
+        .tabla_borde {
+            border: 1px solid #000;
+            padding: 10px;
+            margin-bottom: 20px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        th, td {
+            border: 1px solid #000;
+            padding: 8px;
+        }
+        .border_top {
+            border-top: 1px solid #000;
+        }
+        .bold {
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body class="white-bg">
+    <div class="container">
+        <div class="tabla_borde">
+            <!-- Contenido del recibo -->
+            {% set cp = doc.company %}
+            {% set isNota = doc.tipoDoc in ['07', '08'] %}
+            {% set isAnticipo = doc.totalAnticipos is defined and doc.totalAnticipos > 0 %}
+            {% set name = doc.tipoDoc|catalog('01') %}
+            <table width="100%">
+                <tbody>
+                    <tr>
+                        <td colspan="2">
+                            <table width="100%" height="200px" border="0" aling="center" cellpadding="0" cellspacing="0">
+                                <tr>
+                                    <td width="50%" height="90" align="center">
+                                        <span><img src="{{ params.system.logo|image_b64 }}" height="80" style="text-align:center" border="0"></span>
+                                    </td>
+                                    <td width="5%" height="40" align="center"></td>
+                                    <td width="45%" rowspan="2" valign="bottom" style="padding-left:0">
+                                        <div class="tabla_borde">
+                                            <table width="100%" border="0" height="200" cellpadding="6" cellspacing="0">
+                                                <tr>
+                                                    <td align="center">
+                                                        <span style="font-family:Tahoma, Geneva, sans-serif; font-size:29px" text-align="center">{{ name }}</span>
+                                                        <br>
+                                                        <span style="font-family:Tahoma, Geneva, sans-serif; font-size:19px" text-align="center">E L E C T R Ó N I C A</span>
+                                                    </td>
+                                                </tr>
+                                                <tr>
+                                                    <td align="center">
+                                                        <span style="font-size:15px" text-align="center">R.U.C.: {{ cp.ruc }}</span>
+                                                    </td>
+                                                </tr>
+                                                <tr>
+                                                    <td align="center">
+                                                        <span style="font-size:24px">{{ doc.serie }}-{{ doc.correlativo }}</span>
+                                                    </td>
+                                                </tr>
+                                            </table>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td valign="bottom" style="padding-left:0">
+                                        <div class="tabla_borde">
+                                            <table width="96%" height="100%" border="0" border-radius="" cellpadding="9" cellspacing="0">
+                                                <tr>
+                                                    <td align="center">
+                                                        <strong><span style="font-size:15px">{{ cp.razonSocial }}</span></strong>
+                                                    </td>
+                                                </tr>
+                                                <tr>
+                                                    <td align="left">
+                                                        <strong>Dirección: </strong>{{ cp.address.direccion }}
+                                                    </td>
+                                                </tr>
+                                                <tr>
+                                                    <td align="left">
+                                                        {{ params.user.header|raw }}
+                                                    </td>
+                                                </tr>
+                                            </table>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </table>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td colspan="2">
+                            <div class="tabla_borde">
+                                <!-- Aquí va la información del cliente y los detalles del recibo -->
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <div class="tabla_borde">
+                                <!-- Aquí van los totales del recibo -->
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td colspan="2">
+                            <hr style="display: block; height: 1px; border: 0; border-top: 1px solid #666; margin: 20px 0; padding: 0;">
+                            <blockquote>
+                                {% if params.user.footer is defined %}
+                                    {{ params.user.footer|raw }}
+                                {% endif %}
+                                {% if params.system.hash is defined and params.system.hash%}
+                                    <strong>Resumen:</strong>   {{ params.system.hash }}<br>
+                                {% endif %}
+                                <span>Representación Impresa de la {{ name }} ELECTRÓNICA.</span>
+                            </blockquote>
+                            {% if max_items is defined and doc.details|length > max_items %}
+                                <div style="page-break-after:always;"></div>
+                            {% endif %}
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</body>
+</html>

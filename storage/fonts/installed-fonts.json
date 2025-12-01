@@ -1,0 +1,24 @@
+{
+    "nunito": {
+        "normal": "C:\\xampp\\htdocs\\fe\\storage\\fonts\/nunito_normal_ee99570c2d40db4ca7cb27ecfa07bd0e",
+        "600": "C:\\xampp\\htdocs\\fe\\storage\\fonts\/nunito_600_462968132f9bb0b300c9ac89cb99aa5d",
+        "bold": "nunito_bold_8878d120ae1cf02db589138e103b16c4"
+    },
+    "font awesome 6 brands": {
+        "normal": "font_awesome_6_brands_normal_492180ba0b234c66ed61bb530be996d1"
+    },
+    "font awesome 6 free": {
+        "normal": "C:\\xampp\\htdocs\\fe\\storage\\fonts\/font_awesome_6_free_normal_624640cd70bcb4b856e86b9022d34b63",
+        "900": "font_awesome_6_free_900_6c9aa2b42b7852bc5a11d6178d5644da"
+    },
+    "font awesome 5 brands": {
+        "normal": "font_awesome_5_brands_normal_492180ba0b234c66ed61bb530be996d1"
+    },
+    "font awesome 5 free": {
+        "900": "C:\\xampp\\htdocs\\fe\\storage\\fonts\/font_awesome_5_free_900_6c9aa2b42b7852bc5a11d6178d5644da",
+        "normal": "font_awesome_5_free_normal_624640cd70bcb4b856e86b9022d34b63"
+    },
+    "fontawesome": {
+        "normal": "fontawesome_normal_c1f50fc0764acdac5fbaf08e66673069"
+    }
+}

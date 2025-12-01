@@ -1,0 +1,8 @@
+
+
+
+
+INSERT INTO `tenants` (`id`, `name`, `domain`, `database`, `created_at`, `updated_at`) VALUES
+(1, 'abcfe3', 'abc.fe3.test', 'abcfe3', NULL, NULL),
+(2, 'fe3', 'fe3.test', 'fe3', NULL, NULL),
+(3, 'xyzfe3', 'xyz.fe3.test', 'xyzfe3', NULL, NULL);

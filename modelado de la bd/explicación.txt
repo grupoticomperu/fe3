@@ -1,0 +1,12 @@
+
+con multitenancy
+
+-el registro de empresa deberia estar inhabilitado
+-Base de datos y url
+ * abc.fe3.test su bd   abcfe3
+ * xyz.fe3.test su bd   xyzfe3
+
+-cada empresa tendra 1 sola osea no se registrara varias empresas no es multiempresa por programación
+-o sino quitamos la multiempresa y cada empresa corre individual
+
+

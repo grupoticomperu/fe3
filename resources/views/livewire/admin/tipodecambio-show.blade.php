@@ -1,0 +1,3 @@
+<div>
+    {{ $valorventa }}
+</div>

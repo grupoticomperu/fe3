@@ -1,0 +1,60 @@
+@import 'tailwindcss/base';
+@import 'tailwindcss/components';
+@import 'tailwindcss/utilities';
+@import 'buttons.css';
+@import 'container.css';
+@import 'form.css';
+
+.swal-confirm-btn {
+  background-color: #2563eb !important; /* Azul Tailwind */
+  color: #fff !important;
+  border-radius: 0.375rem !important; /* rounded-md */
+  padding: 0.5rem 1.25rem !important;
+  font-weight: 600 !important;
+  border: none !important;
+  box-shadow: 0 1px 2px rgba(0,0,0,0.05) !important;
+  cursor: pointer !important;
+  transition: background-color 0.3s ease;
+  display: inline-block !important; /* 👈 asegura que se vea como botón */
+}
+
+.swal-confirm-btn:hover {
+  background-color: #1d4ed8 !important; /* azul más oscuro */
+}
+
+.swal-confirm-btn:focus {
+  outline: none !important;
+  box-shadow: 0 0 0 3px rgba(37,99,235,0.4) !important; /* focus ring */
+}
+
+/* === FIX SWEETALERT2 + TAILWIND INVISIBLE BUTTONS === */
+.swal2-styled.swal2-confirm {
+  background-color: #2563eb !important; /* blue-600 */
+  color: #fff !important;
+  border: none !important;
+  font-weight: 600 !important;
+  padding: 0.5rem 1.25rem !important;
+  border-radius: 0.375rem !important; /* rounded-md */
+}
+
+.swal2-styled.swal2-confirm:hover {
+  background-color: #1d4ed8 !important; /* blue-700 */
+}
+
+.swal2-styled.swal2-cancel {
+  background-color: #e5e7eb !important; /* gray-200 */
+  color: #111827 !important; /* gray-900 */
+  border: none !important;
+  font-weight: 600 !important;
+  padding: 0.5rem 1.25rem !important;
+  border-radius: 0.375rem !important;
+}
+
+.swal2-styled.swal2-cancel:hover {
+  background-color: #d1d5db !important; /* gray-300 */
+}
+
+/* opcional: bordes redondeados del popup */
+.swal2-popup {
+  border-radius: 1rem !important;
+}

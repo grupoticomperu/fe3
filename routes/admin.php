@@ -65,6 +65,7 @@ use App\Http\Controllers\admin\UsersPermissionsController;
 use App\Http\Livewire\Admin\ConductorCreate;
 use App\Http\Livewire\Admin\ConductorEdit;
 use App\Http\Livewire\Admin\ConductorList;
+use App\Http\Livewire\Admin\GuiaList;
 use App\Http\Livewire\Admin\LocalproductatributestockList;
 use App\Http\Livewire\Admin\LocalproductatributestocktotalesList;
 use App\Http\Livewire\Admin\PuntodepartidaCreate;
@@ -111,6 +112,8 @@ Route::get('sale', [SaleController::class, 'index'])->name('admin.sale.index');
 Route::get('sale/create', [SaleController::class, 'create'])->name('admin.sale.create');
 
 Route::get('comprobante', ComprobanteList::class)->name('admin.comprobante.list');
+Route::get('guias', GuiaList::class)->name('admin.guia.list');
+
 //Route::get('comprobante', ComprobanteList::class, 'create')->name('admin.comprobante.list');
 Route::get('download-xml/{comprobanteId}', ComprobanteList::class)->name('download-xml');
 Route::get('comprobante/create', [ComprobanteController::class, 'create'])->name('admin.comprobante.create');

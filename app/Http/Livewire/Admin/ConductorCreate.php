@@ -25,7 +25,7 @@ class ConductorCreate extends Component
 
 
 
-    protected $rules = [
+    /*     protected $rules = [
         'tipodocumento_id' => 'required|exists:tipodocumentos,id',
         'numdoc' => 'required|min:8|max:20',
         'nomape' => 'required|min:3|max:150',
@@ -51,7 +51,63 @@ class ConductorCreate extends Component
 
         'celular.required' => 'El número de celular es obligatorio.',
         'celular.max' => 'El número de celular no debe superar :max caracteres.',
+    ]; */
+
+
+
+    protected function rules()
+    {
+        return [
+            'tipodocumento_id' => 'required|exists:tipodocumentos,id',
+
+            // VALIDACIÓN DINÁMICA + UNIQUE
+            'numdoc' => [
+                'required',
+                $this->tipodocumento_id == 2      // DNI
+                    ? 'digits:8'
+                    : ($this->tipodocumento_id == 4 // RUC
+                        ? 'digits:11'
+                        : 'min:8|max:20'),
+                'unique:conductors,numdoc',
+            ],
+
+            'nomape' => 'required|min:3|max:150',
+
+            // VALIDACIÓN DE LICENCIA DE CONDUCIR PARA GUÍA ELECTRÓNICA
+            // FORMATO: 8 dígitos + categoría válida (A1, A2A, A2B, A2C, A3A, A3B, A3C, B1, B2A, B2B, B2C)
+            'licencia' => [
+                'required',
+                'regex:/^[0-9]{8}(A1|A2A|A2B|A2C|A3A|A3B|A3C|B1|B2A|B2B|B2C)$/'
+            ],
+
+            'celular' => 'required|max:20',
+            'state' => 'boolean',
+        ];
+    }
+
+    protected $messages = [
+        'tipodocumento_id.required' => 'Seleccione un tipo de documento.',
+        'tipodocumento_id.exists' => 'El tipo de documento no es válido.',
+
+        'numdoc.required' => 'El número de documento es obligatorio.',
+        'numdoc.digits' => 'El número de documento debe tener exactamente :digits dígitos.',
+        'numdoc.min' => 'El número de documento debe tener mínimo :min caracteres.',
+        'numdoc.max' => 'El número de documento no debe superar :max caracteres.',
+
+        'nomape.required' => 'El nombre y apellido es obligatorio.',
+        'nomape.min' => 'Debe tener mínimo :min caracteres.',
+        'nomape.max' => 'No debe superar :max caracteres.',
+
+        'licencia.required' => 'La licencia es obligatoria.',
+        'licencia.regex' => 'La licencia debe tener formato válido: 8 dígitos seguidos de categoría (Ej: 12345678A1, 12345678A2B).',
+
+        'celular.required' => 'El número de celular es obligatorio.',
+        'celular.max' => 'El número de celular no debe superar :max caracteres.',
     ];
+
+
+
+
 
     public function save()
     {

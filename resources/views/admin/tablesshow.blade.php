@@ -322,7 +322,17 @@
                 </article>
                 {{-- @endcan --}}
 
+                <article>
+                    <figure>
+                        <img class="object-cover w-full rounded-xl h-36" src="{{ asset('img/pos.jpg') }}"
+                            alt="">
+                    </figure>
+                    <header class="mt-2">
+                        <h1 class="text-xl text-center text-gray-700"><a
+                                href="{{ route('admin.guia.list') }}">Guias</a></h1>
+                    </header>
 
+                </article>
 
 
 

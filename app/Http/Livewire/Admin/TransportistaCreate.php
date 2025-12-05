@@ -28,33 +28,40 @@ class TransportistaCreate extends Component
 
     protected $rules = [
         'tipodocumento_id' => 'required|exists:tipodocumentos,id',
-        'numdoc' => 'required|min:8|max:20',
-        'nomrazonsocial' => 'required|min:3|max:150',
-        'address' => 'required|max:200',
-        'nromtc' => 'required|max:20',
-        'predeterminado' => 'boolean',
-        'state' => 'boolean',
+        'numdoc'           => 'required|min:8|max:20',
+        'nomrazonsocial'   => 'required|min:3|max:150',
+        'address'          => 'required|max:200',
+
+        // 6 a 8 dígitos + opcional 1 a 3 letras
+        'nromtc'           => [
+            'required',
+            'max:11', // 8 dígitos + 3 letras = 11
+            'regex:/^[0-9]{6,8}([A-Za-z]{1,3})?$/',
+        ],
+
+        'predeterminado'   => 'boolean',
+        'state'            => 'boolean',
     ];
 
     protected $messages = [
         'tipodocumento_id.required' => 'Seleccione un tipo de documento.',
-        'tipodocumento_id.exists' => 'El tipo de documento no es válido.',
+        'tipodocumento_id.exists'   => 'El tipo de documento no es válido.',
 
         'numdoc.required' => 'El número de documento es obligatorio.',
-        'numdoc.min' => 'El número de documento debe tener al menos :min caracteres.',
-        'numdoc.max' => 'El número de documento no debe superar :max caracteres.',
+        'numdoc.min'      => 'El número de documento debe tener al menos :min caracteres.',
+        'numdoc.max'      => 'El número de documento no debe superar :max caracteres.',
 
         'nomrazonsocial.required' => 'La razón social es obligatoria.',
-        'nomrazonsocial.min' => 'La razón social debe tener mínimo :min caracteres.',
-        'nomrazonsocial.max' => 'La razón social no debe superar :max caracteres.',
+        'nomrazonsocial.min'      => 'La razón social debe tener mínimo :min caracteres.',
+        'nomrazonsocial.max'      => 'La razón social no debe superar :max caracteres.',
 
         'address.required' => 'La dirección es obligatoria.',
-        'address.max' => 'La dirección no debe superar :max caracteres.',
+        'address.max'      => 'La dirección no debe superar :max caracteres.',
 
         'nromtc.required' => 'El número MTC es obligatorio.',
-        'nromtc.max' => 'El número MTC no debe superar :max caracteres.',
+        'nromtc.max'      => 'El número MTC no debe superar :max caracteres.',
+        'nromtc.regex'    => 'El número MTC debe tener de 6 a 8 dígitos y opcionalmente 1 a 3 letras al final (ejemplo: 1513621CNG).',
     ];
-
 
 
 

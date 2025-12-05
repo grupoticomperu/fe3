@@ -301,6 +301,11 @@ Q03NoAh6oA46zA1LzaF+lpcIPbqNAdb4B4gJ0os+mCgwXx8DkEMSSZvWUMI=
         Permission::create(['name' => 'Vehiculo Delete', 'display_name' => 'Eliminar Vehiculo'])->SyncRoles([$adminRole]);
 
 
+        Permission::create(['name' => 'Guia View', 'display_name' => 'Ver Guia'])->SyncRoles([$adminRole]);
+        Permission::create(['name' => 'Guia Create', 'display_name' => 'Crear Guia'])->SyncRoles([$adminRole]);
+        Permission::create(['name' => 'Guia Update', 'display_name' => 'Actualizar Guia'])->SyncRoles([$adminRole]);
+        Permission::create(['name' => 'Guia Delete', 'display_name' => 'Eliminar Guia'])->SyncRoles([$adminRole]);
+
         //creando empresa de muestra
 
 

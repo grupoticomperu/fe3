@@ -57,4 +57,8 @@ class Guia extends Model
         return $this->belongsToMany(Conductor::class);
     }
 
+    public function comprobante()
+    {
+        return $this->belongsTo(Comprobante::class);
+    }
 }

@@ -12,7 +12,7 @@ class Comprobante extends Model
     protected $guarded = ['id', 'created_at', 'updated_at'];
 
 
-    
+
 
     //relacion de uno a muchos inversa
     public function local_tipocomprobante()
@@ -74,6 +74,12 @@ class Comprobante extends Model
     public function ncboleta()
     {
         return $this->hasOne(Ncboleta::class);
+    }
+
+    //relacion de uno a uno
+    public function guia()
+    {
+        return $this->hasOne(Guia::class);
     }
 
     //ruc, dni

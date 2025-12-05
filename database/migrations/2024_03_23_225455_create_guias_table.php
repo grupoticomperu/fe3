@@ -26,6 +26,7 @@ return new class extends Migration
 
             $table->unsignedBigInteger('customer_id')->nullable();//destinatario o cliente
             $table->foreign('customer_id')->references('id')->on('customers')->onDelete('cascade');
+            
             //envio
             $table->unsignedBigInteger('motivotraslado_id')->nullable();
             $table->foreign('motivotraslado_id')->references('id')->on('motivotraslados')->onDelete('cascade');

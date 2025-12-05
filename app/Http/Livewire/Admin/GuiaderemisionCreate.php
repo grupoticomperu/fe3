@@ -200,16 +200,7 @@ class GuiaderemisionCreate extends Component
             'district_id.required'         => 'Debe seleccionar el distrito de llegada.',
         ]);
 
-
-        /* if ($this->modalidaddetraslado === '01') {
-            if (empty($this->transportista_id)) {
-                $this->emit('alert', 'Debe seleccionar el transportista (Transporte Público).');
-                return;
-            }
-        } */
-
-
-
+   
         // 🚛 Modalidad Pública (01) solo acepta empresas en los registros
         if ($this->modalidaddetraslado === '01') {
             if (empty($this->transportista_id)) {
@@ -225,8 +216,6 @@ class GuiaderemisionCreate extends Component
             $this->vehiculo_id = null;
             $this->conductor_id = null;
         }
-
-
 
 
         // Modalidad Privada (02)
@@ -246,19 +235,6 @@ class GuiaderemisionCreate extends Component
             $this->transportista_id = null;
         }
 
-
-
-
-        /* if ($this->modalidaddetraslado === '02') {
-            if (empty($this->vehiculo_id)) {
-                $this->emit('alert', 'Debe seleccionar un vehículo (Transporte Privado).');
-                return;
-            }
-            if (empty($this->conductor_id)) {
-                $this->emit('alert', 'Debe seleccionar un conductor (Transporte Privado).');
-                return;
-            }
-        } */
 
 
         $this->ubigeollegada = $this->district_id;
@@ -321,12 +297,14 @@ class GuiaderemisionCreate extends Component
             $this->boleta->conductors()->attach($this->conductor_id);
         }
 
+        //crearemos el PDF y lo subiremos a aw s3
+
         $sunat = new SunatService($comprobante = null, $this->company, $temporals, $this->boleta, null, null);
 
         $sunat->getSeeApi($this->company);
         $sunat->setDespatch();
         $sunat->sendDespatch();
-        //$sunat->generatePdfReport();
+        $sunat->generatePdfReportGuia();
 
         $this->isCreated = true;
 

@@ -341,12 +341,6 @@ class ComprobanteCreate extends Component
     }
 
 
-
-
-
-
-
-
     public function searchRucantiguo()
     {
 
@@ -419,7 +413,6 @@ class ComprobanteCreate extends Component
             $this->emit('alert', 'No se encontró información en PeruFacturación.');
         }
     }
-
 
 
     public function getTotales()
@@ -803,10 +796,6 @@ class ComprobanteCreate extends Component
         $text = preg_replace('/&([a-zA-Z])(acute|grave|circ|tilde|uml);/', '$1', $text);
         return $text;
     } */
-
-
-
-
 
 
 

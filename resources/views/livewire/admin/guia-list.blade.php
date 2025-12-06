@@ -213,9 +213,12 @@
                                         {{-- para el xml de ncboleta --}}
                                         {{-- @if ($guia->tipocomprobante_id == 7) --}}
                                             @if ($guia->xml_path)
-                                                <a href="{{ asset('storage/' . $guia->xml_path) }}" target="_blank"><img
-                                                        class='h-6' src="/images/icons/xml_cdr.svg"
-                                                        alt="xml"></a>
+                                                
+                                                <a href="#"
+                                                    wire:click.prevent="downloadXml({{ $guia->comprobante->id }})">
+                                                    <img class='h-6' src="/images/icons/xml_cdr.svg"
+                                                        alt="xml">
+                                                </a>
                                             @else
                                                 <a href="#" wire:click="generateXml({{ $guia->id }})"><img
                                                         class='h-6' src="/images/icons/get_cdr.svg"

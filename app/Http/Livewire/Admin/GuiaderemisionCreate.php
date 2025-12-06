@@ -173,7 +173,7 @@ class GuiaderemisionCreate extends Component
     //guardamos el comprobante
     public function save()
     {
-        
+
         $this->validate([
             'motivotraslado_id'      => 'required',
             'modalidaddetraslado'    => 'required',
@@ -200,7 +200,7 @@ class GuiaderemisionCreate extends Component
             'district_id.required'         => 'Debe seleccionar el distrito de llegada.',
         ]);
 
-   
+
         // 🚛 Modalidad Pública (01) solo acepta empresas en los registros
         if ($this->modalidaddetraslado === '01') {
             if (empty($this->transportista_id)) {
@@ -259,6 +259,47 @@ class GuiaderemisionCreate extends Component
                 'codigobarras' => $temporal->codigobarras,
             ];
         });
+
+
+
+        $comprobante = Comprobante::create([
+            //'customer_id' => $this->customer_id,
+            'customer_id' => $this->customer_id,
+            'local_id' => $this->local_id,
+            'tipocomprobante_id' => $this->tipocomprobante_id, //factura boleta
+            'local_tipocomprobante_id' => $this->local_tipocomprobante_id,
+            'company_id' => auth()->user()->employee->company->id, //encontramos la company actual osea la compania del usuario logueado
+            'employee_id' => auth()->user()->employee->id,
+            //guardaremos campos para facturacion electronica
+            'tipodeoperacion_id' => null, //venta interna en este caso ponemos 0101, pero em la tabla tiene id = 1
+            'tipodocumento_id' => $this->tipodocumento_id, //ruc, dni
+            'fechaemision' =>  $this->fechaemision,
+            'fechavencimiento' =>  null,
+            'paymenttype_id' => null, //contado, credito
+            'currency_id' => null, //PEN, USD
+            //'mtoopergravadas' => $this->mtoopergravadas,
+            //'mtooperexoneradas' => $this->mtooperexoneradas,
+            //'mtooperinafectas' => $this->mtooperinafectas,
+            //'mtooperexportacion' => $this->mtooperexportacion,
+            //'mtoopergratuitas' => $this->mtoopergratuitas,
+            //'mtoigv' => $this->mtoigv,
+            //'mtoigvgratuitas' => $this->mtoigvgratuitas,
+            //'icbper' => $this->icbper,
+            //'totalimpuestos' => $this->totalimpuestos,
+            //'valorventa' => $this->valorventa,
+            //'subtotal' => $this->subtotall,
+            
+            //'mtoimpventa' => $this->mtoimpventa,
+            //'redondeo' => $this->redondeo,
+            //'legends' => json_encode($this->getLegends()),
+            'serienumero' => $this->serienumero,
+            //'legends' => json_encode($this->legends),
+            //anticipos
+            //detracciones
+            //'nota' => $this->nota,
+
+        ]);
+
 
 
 

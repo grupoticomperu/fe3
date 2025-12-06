@@ -5,6 +5,7 @@ namespace App\Http\Livewire\Admin;
 use App\Models\Tipodocumento;
 use App\Models\Vehiculo;
 use Livewire\Component;
+use Illuminate\Validation\Rule;
 
 class VehiculoEdit extends Component
 {
@@ -37,32 +38,44 @@ class VehiculoEdit extends Component
         $this->state = $vehiculo->state;
     }
 
-    protected $rules = [
-      
-        'numeroplaca' => 'required|min:6|max:6',
-        'modelo' => 'required|min:3|max:150',
-        'marca' => 'required|max:200',
-        'tuce' => 'required|max:20',
-        'predeterminado' => 'boolean',
-        'state' => 'boolean',
-    ];
+
+    // 👇 REGLAS DINÁMICAS PARA EDITAR (ignora el propio ID)
+    protected function rules()
+    {
+        return [
+            'numeroplaca' => [
+                'required',
+                'min:6',
+                'max:6',
+                Rule::unique('vehiculos', 'numeroplaca')->ignore($this->vehiculo->id),
+            ],
+            'modelo' => ['required', 'min:3', 'max:150'],
+            'marca' => ['required', 'max:200'],
+            'tuce' => ['required', 'max:20'],
+            'predeterminado' => ['boolean'],
+            'state' => ['boolean'],
+        ];
+    }
 
     protected $messages = [
-      
-        'numeroplaca.required' => 'El número de documento es obligatorio.',
-        'numeroplaca.min' => 'El número de documento debe tener al menos :min caracteres.',
-        'numeroplaca.max' => 'El número de documento no debe superar :max caracteres.',
+        'numeroplaca.required' => 'El número de placa es obligatorio.',
+        'numeroplaca.min' => 'El número de placa debe tener al menos :min caracteres.',
+        'numeroplaca.max' => 'El número de placa no debe superar :max caracteres.',
+        'numeroplaca.unique' => 'Esta placa ya se encuentra registrada.',
 
-        'modelo.required' => 'El Modelo es obligatoria.',
+        'modelo.required' => 'El Modelo es obligatorio.',
         'modelo.min' => 'El Modelo debe tener mínimo :min caracteres.',
         'modelo.max' => 'El Modelo no debe superar :max caracteres.',
 
-        'marca.required' => 'La dirección es obligatoria.',
-        'marca.max' => 'La dirección no debe superar :max caracteres.',
+        'marca.required' => 'La marca es obligatoria.',
+        'marca.max' => 'La marca no debe superar :max caracteres.',
 
-        'tuce.required' => 'El tuce es obligatorio.',
-        'tuce.max' => 'El tuce no debe superar :max caracteres.',
+        'tuce.required' => 'El TUCE es obligatorio.',
+        'tuce.max' => 'El TUCE no debe superar :max caracteres.',
     ];
+
+
+    
 
     public function update()
     {

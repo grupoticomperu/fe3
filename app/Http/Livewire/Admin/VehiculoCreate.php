@@ -26,8 +26,7 @@ class VehiculoCreate extends Component
 
 
     protected $rules = [
-       
-        'numeroplaca' => 'required|min:6|max:6',
+        'numeroplaca' => 'required|min:6|max:6|unique:vehiculos,numeroplaca',
         'modelo' => 'required|min:3|max:150',
         'marca' => 'required|max:200',
         'tuce' => 'required|max:20',
@@ -36,10 +35,10 @@ class VehiculoCreate extends Component
     ];
 
     protected $messages = [
-       
         'numeroplaca.required' => 'El número de documento es obligatorio.',
         'numeroplaca.min' => 'El número de documento debe tener al menos :min caracteres.',
         'numeroplaca.max' => 'El número de documento no debe superar :max caracteres.',
+        'numeroplaca.unique' => 'Esta placa ya se encuentra registrada.',
 
         'modelo.required' => 'El Modelo es obligatoria.',
         'modelo.min' => 'El Modelo debe tener mínimo :min caracteres.',

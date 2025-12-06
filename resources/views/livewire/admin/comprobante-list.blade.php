@@ -341,20 +341,11 @@
                                         {{-- para el xml de factura --}}
                                         @if ($comprobante->tipocomprobante_id == 1)
                                             @if ($comprobante->factura->xml_path)
-                                                {{-- <a href="{{ asset('storage/' . $comprobante->factura->xml_path) }}" funciona en local --}}
-                                                {{-- <a href="{{ Storage::disk('s3')->url($comprobante->factura->xml_path) }}" target="_blank"> //muestra el xml, pero no lo descarga --}}
-                                                {{-- <a href="{{ route('download-xml', ['comprobante' => $comprobante->id]) }}"> --}}
                                                 <a href="#"
                                                     wire:click.prevent="downloadXml({{ $comprobante->id }})">
                                                     <img class='h-6' src="/images/icons/xml_cdr.svg"
                                                         alt="xml">
                                                 </a>
-
-                                                {{--   <a
-                                                    href="{{ route('download-xml', ['comprobante' => $comprobante->id]) }}">
-                                                    <img class='h-6' src="/images/icons/xml_cdr.svg"
-                                                        alt="xml">
-                                                </a> --}}
                                             @else
                                                 <a href="#"
                                                     wire:click="generateXml({{ $comprobante->id }})"><img
@@ -365,14 +356,6 @@
                                         {{-- para el xml de boleta --}}
                                         @if ($comprobante->tipocomprobante_id == 2)
                                             @if ($comprobante->boleta->xml_path)
-                                                
-                                                {{-- <a href="{{ Storage::disk('s3')->url($comprobante->boleta->xml_path) }}"
-                                                    target="_blank">
-                                                    <img class='h-6' src="/images/icons/xml_cdr.svg"
-                                                        alt="xml">
-                                                </a> --}}
-
-
                                                 <a href="#"
                                                     wire:click.prevent="downloadXml({{ $comprobante->id }})">
                                                     <img class='h-6' src="/images/icons/xml_cdr.svg"
@@ -389,9 +372,14 @@
                                         {{-- para el xml de ncfactura --}}
                                         @if ($comprobante->tipocomprobante_id == 3)
                                             @if ($comprobante->ncfactura->xml_path)
-                                                <a href="{{ asset('storage/' . $comprobante->ncfactura->xml_path) }}"
+                                                {{-- <a href="{{ asset('storage/' . $comprobante->ncfactura->xml_path) }}"
                                                     target="_blank"><img class='h-6'
-                                                        src="/images/icons/xml_cdr.svg" alt="xml"></a>
+                                                        src="/images/icons/xml_cdr.svg" alt="xml"></a> --}}
+                                                <a href="#"
+                                                    wire:click.prevent="downloadXml({{ $comprobante->id }})">
+                                                    <img class='h-6' src="/images/icons/xml_cdr.svg"
+                                                        alt="xml">
+                                                </a>
                                             @else
                                                 <a href="#"
                                                     wire:click="generateXml({{ $comprobante->id }})"><img
@@ -403,9 +391,30 @@
                                         {{-- para el xml de ncboleta --}}
                                         @if ($comprobante->tipocomprobante_id == 5)
                                             @if ($comprobante->ncboleta->xml_path)
-                                                <a href="{{ asset('storage/' . $comprobante->ncboleta->xml_path) }}"
+                                                {{-- <a href="{{ asset('storage/' . $comprobante->ncboleta->xml_path) }}"
                                                     target="_blank"><img class='h-6'
-                                                        src="/images/icons/xml_cdr.svg" alt="xml"></a>
+                                                        src="/images/icons/xml_cdr.svg" alt="xml"></a> --}}
+                                                <a href="#"
+                                                    wire:click.prevent="downloadXml({{ $comprobante->id }})">
+                                                    <img class='h-6' src="/images/icons/xml_cdr.svg"
+                                                        alt="xml">
+                                                </a>
+                                            @else
+                                                <a href="#"
+                                                    wire:click="generateXml({{ $comprobante->id }})"><img
+                                                        class='h-6' src="/images/icons/get_cdr.svg"
+                                                        alt="xml"></a>
+                                            @endif
+                                        @endif
+
+                                        {{-- para el xml de la Guia --}}
+                                        @if ($comprobante->tipocomprobante_id == 7)
+                                            @if (optional($comprobante->guia)->xml_path)
+                                                <a href="#"
+                                                    wire:click.prevent="downloadXml({{ $comprobante->id }})">
+                                                    <img class='h-6' src="/images/icons/xml_cdr.svg"
+                                                        alt="xml">
+                                                </a>
                                             @else
                                                 <a href="#"
                                                     wire:click="generateXml({{ $comprobante->id }})"><img
@@ -456,9 +465,13 @@
                                         {{-- para el cdr de ncfactura --}}
                                         @if ($comprobante->tipocomprobante_id == 3)
                                             @if ($comprobante->ncfactura->sunat_cdr_path)
-                                                <a href="{{ asset('storage/' . $comprobante->ncfactura->sunat_cdr_path) }}"
+                                                {{-- <a href="{{ asset('storage/' . $comprobante->ncfactura->sunat_cdr_path) }}"
                                                     target="_blank"><img class='h-6' src="/images/icons/cdr.svg"
-                                                        alt="enviado con cdr"></a>
+                                                        alt="enviado con cdr"></a> --}}
+                                                <a href="{{ Storage::disk('s3')->url($comprobante->ncfactura->sunat_cdr_path) }}"
+                                                    target="_blank">
+                                                    <img class='h-6' src="/images/icons/cdr.svg"
+                                                        alt="enviado con CDR"></a>
                                             @else
                                                 <a href="#" wire:click="sendSunat({{ $comprobante->id }})"><img
                                                         class='h-6' src="/images/icons/get_cdr.svg"
@@ -469,9 +482,31 @@
                                         {{-- para el cdr de ncboleta --}}
                                         @if ($comprobante->tipocomprobante_id == 5)
                                             @if ($comprobante->ncboleta->sunat_cdr_path)
-                                                <a href="{{ asset('storage/' . $comprobante->ncboleta->sunat_cdr_path) }}"
+                                                {{-- <a href="{{ asset('storage/' . $comprobante->ncboleta->sunat_cdr_path) }}"
                                                     target="_blank"><img class='h-6' src="/images/icons/cdr.svg"
+                                                        alt="xml"></a> --}}
+                                                <a href="{{ Storage::disk('s3')->url($comprobante->ncboleta->sunat_cdr_path) }}"
+                                                    target="_blank">
+                                                    <img class='h-6' src="/images/icons/cdr.svg"
+                                                        alt="enviado con CDR"></a>
+                                            @else
+                                                <a href="#" wire:click="sendSunat({{ $comprobante->id }})"><img
+                                                        class='h-6' src="/images/icons/get_cdr.svg"
                                                         alt="xml"></a>
+                                            @endif
+                                        @endif
+
+
+                                        {{-- para el cdr de guia--}}
+                                        @if ($comprobante->tipocomprobante_id == 7)
+                                            @if (optional($comprobante->guia)->sunat_cdr_path)
+                                                {{-- <a href="{{ asset('storage/' . $comprobante->ncboleta->sunat_cdr_path) }}"
+                                                    target="_blank"><img class='h-6' src="/images/icons/cdr.svg"
+                                                        alt="xml"></a> --}}
+                                                <a href="{{ Storage::disk('s3')->url($comprobante->guia->sunat_cdr_path) }}"
+                                                    target="_blank">
+                                                    <img class='h-6' src="/images/icons/cdr.svg"
+                                                        alt="enviado con CDR"></a>
                                             @else
                                                 <a href="#" wire:click="sendSunat({{ $comprobante->id }})"><img
                                                         class='h-6' src="/images/icons/get_cdr.svg"
@@ -527,6 +562,16 @@
 
                                         @if ($comprobante->tipocomprobante_id == 5)
                                             @if ($comprobante->ncboleta->sunat_cdr_path)
+                                                <a href="{{-- {{ route('admin.comprobante.edit', $comprobante) }} --}}"><img class='h-6'
+                                                        src='/images/icons/check.svg' /></a>
+                                            @else
+                                                <a href="{{-- {{ route('admin.comprobante.edit', $comprobante) }} --}}"><img class='h-6'
+                                                        src='/images/icons/stop.svg' /></a>
+                                            @endif
+                                        @endif
+
+                                        @if ($comprobante->tipocomprobante_id == 7)
+                                            @if (optional($comprobante->guia)->sunat_cdr_path)
                                                 <a href="{{-- {{ route('admin.comprobante.edit', $comprobante) }} --}}"><img class='h-6'
                                                         src='/images/icons/check.svg' /></a>
                                             @else

@@ -279,7 +279,7 @@
                                     </td>
 
                                     {{-- PDF --}}
-                                    <td class="px-6 py-4 text-sm text-gray-500 whitespace-nowrap text-right">
+                                    <td class="px-6 py-4 text-sm text-gray-500 whitespace-nowrap text-right">    
                                         {{-- <a href="" ><img class='h-6' src='/images/icons/pdf_cpe.svg'/></a> --}}
                                         {{-- @if ($comprobante->factura->pdf_path)
                                                 <a href="{{ asset('storage/' . $comprobante->factura->pdf_path) }} "
@@ -332,6 +332,22 @@
                                                 </a>
                                             @endif
                                         @endif
+
+
+                                        {{-- para mostrar guias es 7 --}}
+                                        
+                                        @if ($comprobante->tipocomprobante_id == 7)
+                                        
+                                            @if (optional($comprobante->guia)->pdf_path)
+                                                <a href="{{ Storage::disk('s3')->url($comprobante->guia->pdf_path) }}" target="_blank">
+                                                    <img class='h-6' src="/images/icons/pdf_cpe.svg"
+                                                        alt="comprobante">
+                                                </a>
+
+
+                                            @endif
+                                        @endif
+
 
 
 
@@ -497,7 +513,7 @@
                                         @endif
 
 
-                                        {{-- para el cdr de guia--}}
+                                        {{-- para el cdr de guia --}}
                                         @if ($comprobante->tipocomprobante_id == 7)
                                             @if (optional($comprobante->guia)->sunat_cdr_path)
                                                 {{-- <a href="{{ asset('storage/' . $comprobante->ncboleta->sunat_cdr_path) }}"

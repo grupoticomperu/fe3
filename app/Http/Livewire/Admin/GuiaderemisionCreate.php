@@ -311,7 +311,8 @@ class GuiaderemisionCreate extends Component
             'numero' => $this->numero,
             'serienumero' => $this->serienumero,
             'fechaemision' =>  $this->fechaemision,
-            'comprobante_id' => $this->comprobante->id, //la guia tiene el id del comprobante, no del comprobante creado, sino del comprobante relacionado(factura o boleta) al que se hizo guia
+            'pertenecea' => $this->comprobante->serienumero, //el numero del comprobante del que se le hace guia
+            'comprobante_id' => $comprobante->id, //la guia creada pertenece a un comprobante
             'company_id' =>  $this->company_id,
             'customer_id' => $this->customer_id,
             'motivotraslado_id' => $this->motivotraslado_id,

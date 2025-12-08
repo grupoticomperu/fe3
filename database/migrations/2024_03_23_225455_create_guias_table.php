@@ -17,8 +17,8 @@ return new class extends Migration
             $table->integer('numero');
             $table->string('serienumero');
             $table->timestamp('fechaemision')->nullable();
-
-            $table->unsignedBigInteger('comprobante_id')->nullable();
+            $table->string('pertenecea')->nullable(); //guarda el numero del comprobate de quien se hace la guia de remision
+            $table->unsignedBigInteger('comprobante_id')->nullable();//este campo guarda el codigo del comprobante al que pertenece la guia.
             $table->foreign('comprobante_id')->references('id')->on('comprobantes')->onDelete('cascade');
 
             $table->unsignedBigInteger('company_id')->nullable();//compañia que emite

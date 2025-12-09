@@ -279,7 +279,7 @@
                                     </td>
 
                                     {{-- PDF --}}
-                                    <td class="px-6 py-4 text-sm text-gray-500 whitespace-nowrap text-right">    
+                                    <td class="px-6 py-4 text-sm text-gray-500 whitespace-nowrap text-right">
                                         {{-- <a href="" ><img class='h-6' src='/images/icons/pdf_cpe.svg'/></a> --}}
                                         {{-- @if ($comprobante->factura->pdf_path)
                                                 <a href="{{ asset('storage/' . $comprobante->factura->pdf_path) }} "
@@ -335,16 +335,14 @@
 
 
                                         {{-- para mostrar guias es 7 --}}
-                                        
+
                                         @if ($comprobante->tipocomprobante_id == 7)
-                                        
                                             @if (optional($comprobante->guia)->pdf_path)
-                                                <a href="{{ Storage::disk('s3')->url($comprobante->guia->pdf_path) }}" target="_blank">
+                                                <a href="{{ Storage::disk('s3')->url($comprobante->guia->pdf_path) }}"
+                                                    target="_blank">
                                                     <img class='h-6' src="/images/icons/pdf_cpe.svg"
                                                         alt="comprobante">
                                                 </a>
-
-
                                             @endif
                                         @endif
 
@@ -602,10 +600,24 @@
                                     <td class="flex px-6 py-4 text-sm font-medium text-right whitespace-nowrap">
 
 
-                                        {{-- @can('Comprobante Update')
-                                                <a href=" {{ route('admin.comprobante.edit', $comprobante) }} " class="btn btn-green"><i
-                                                        class="fa-solid fa-pen-to-square"></i></a>
-                                            @endcan --}}
+
+
+
+                                        {{-- botón correo --}}
+                                        <button type="button" class="px-4 btn btn-blue"
+                                            wire:click="openEmailModal({{ $comprobante->id }})">
+                                            @
+                                        </button>
+
+                                        {{-- botón WhatsApp (W) lo dejas como está o luego lo cambiamos a Livewire si quieres) --}}
+                                        <a href="{{ route('admin.notadecredito.create', $comprobante->id) }}"
+                                            class="px-4 btn btn-blue">W</a>
+
+                                        {{-- ... resto de botones NC, GR tal como ya los tienes ... --}}
+
+
+
+
 
                                         {{--  @can('Comprobante Update') --}}
                                         @if ($comprobante->tipocomprobante_id == 1 or $comprobante->tipocomprobante_id == 2)
@@ -631,6 +643,12 @@
                                             @endif
                                         @endif
                                         {{--  @endcan --}}
+
+
+                                        {{-- @if ($comprobante->boleta->sunat_cdr_path != null or $comprobante->boleta->resumen_id != null or $comprobante->factura->sunat_cdr_path != null) --}}
+
+
+
 
 
                                         {{-- <a href="" class="text-sm btn btn-orange">GR</a> --}}
@@ -722,11 +740,39 @@
 
 
 
-
-
-        @push('scripts')
-        @endpush
-
     </div>
+
+
+    <x-jet-dialog-modal wire:model="showEmailModal">
+        <x-slot name="title">
+            Enviar comprobante por correo
+        </x-slot>
+
+        <x-slot name="content">
+            <div class="mt-2">
+                <x-jet-label for="email" value="Correo de destino" />
+                <x-jet-input id="email" type="email" class="block w-full mt-1" wire:model.defer="email"
+                    placeholder="cliente@correo.com" />
+                <x-jet-input-error for="email" class="mt-2" />
+            </div>
+
+            @if ($selectedComprobanteId)
+                <p class="mt-2 text-sm text-gray-500">
+                    Se enviará el PDF del comprobante seleccionado.
+                </p>
+            @endif
+        </x-slot>
+
+        <x-slot name="footer">
+            <x-jet-secondary-button wire:click="$set('showEmailModal', false)" wire:loading.attr="disabled">
+                Cancelar
+            </x-jet-secondary-button>
+
+            <x-jet-button class="ml-2" wire:click="sendEmail" wire:loading.attr="disabled">
+                Enviar
+            </x-jet-button>
+        </x-slot>
+    </x-jet-dialog-modal>
+
 
 </div>

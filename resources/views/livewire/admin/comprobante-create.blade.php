@@ -645,9 +645,39 @@
 
 
 
+    <x-jet-dialog-modal wire:model="showWhatsappModal">
+        <x-slot name="title">
+            Enviar comprobante por WhatsApp
+        </x-slot>
 
+        <x-slot name="content">
+            <div class="mt-2">
+                <x-jet-label for="whatsapp_phone" value="Número de WhatsApp" />
+                <x-jet-input id="whatsapp_phone" type="text" class="block w-full mt-1"
+                    wire:model.defer="whatsapp_phone" placeholder="Ej: 999888777" />
+                <x-jet-input-error for="whatsapp_phone" class="mt-2" />
+            </div>
 
+            @if ($pdfUrl)
+                <p class="mt-2 text-sm text-gray-500">
+                    Se enviará el comprobante <strong>{{ $serienumero }}</strong> al número indicado con el siguiente
+                    enlace:
+                    <br>
+                    <span class="break-all text-xs text-gray-400">{{ $pdfUrl }}</span>
+                </p>
+            @endif
+        </x-slot>
 
+        <x-slot name="footer">
+            <x-jet-secondary-button wire:click="$set('showWhatsappModal', false)" wire:loading.attr="disabled">
+                Cancelar
+            </x-jet-secondary-button>
+
+            <x-jet-button class="ml-2" wire:click="sendWhatsapp" wire:loading.attr="disabled">
+                Enviar y continuar
+            </x-jet-button>
+        </x-slot>
+    </x-jet-dialog-modal>
 
 
     @push('styles')
@@ -668,37 +698,14 @@
 
         <script src="https://cdn.jsdelivr.net/momentjs/latest/moment.min.js"></script>
 
-        {{-- <script>
-            var datepicker = new Pikaday({
-                field: document.getElementById('datepicker'),
-                format: 'D MMM YYYY',
-                onSelect: function(selectedDate) {
-                    Livewire.emit('fechaemision', selectedDate);
-                }
-            });
-        </script> --}}
-
-        {{-- <script>
-            var datepicker = new Pikaday({
-                field: document.getElementById('datepicker'),
-                format: 'D MMM YYYY',
-                onSelect: function(selectedDate) {
-                    @this.set('fechaemision', selectedDate);
-                }
-            });
-        </script> --}}
 
 
-        {{-- <script>
-            var datepicker = new Pikaday({
-                field: document.getElementById('datepicker'),
-                format: 'D MMM YYYY',
-                onSelect: function(selectedDate) {
-                    var formattedDate = moment(selectedDate).format('DDMMYYYY');
-                    Livewire.emit('fechaemision', formattedDate);
-                }
+        <script>
+            window.addEventListener('open-whatsapp', event => {
+                const url = event.detail.url;
+                window.open(url, '_blank'); // abre WhatsApp Web / app
             });
-        </script> --}}
+        </script>
 
 
         <script>
@@ -719,16 +726,6 @@
                     @this.set('fechavencimiento', formattedDate);
                 }
             });
-
-
-            /* var datepicker2 = new Pikaday({
-                field: document.getElementById('datepicker2'),
-                format: 'D MMM YYYY',
-                onSelect: function(selectedDate) {
-                    var formattedDate = moment(selectedDate).format('DD/MM/YYYY');
-                    @this.set('fechavencimiento', formattedDate);
-                }
-            }); */
         </script>
 
 

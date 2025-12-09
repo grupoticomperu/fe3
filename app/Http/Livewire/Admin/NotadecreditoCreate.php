@@ -357,6 +357,8 @@ class NotadecreditoCreate extends Component
 
         ///$sunat->generatePdfReport();
 
+        $sunat->generatePdfReportNota();
+
         /* $result = $sunat->send();
         $sunat->generatePdfReport();
         $sunat->generateXml();

@@ -16,6 +16,9 @@ use Illuminate\Support\Facades\Storage;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 
+use Illuminate\Support\Facades\Mail;
+use App\Mail\ComprobantePdfMail;
+
 class ComprobanteList extends Component
 {
     use AuthorizesRequests;
@@ -28,6 +31,12 @@ class ComprobanteList extends Component
     public $readyToLoad = false; //para controlar el preloader inicia en false
     public $company;
     public $igv, $factoricbper;
+
+    public $showEmailModal = false;
+    public $email;
+    public $selectedComprobanteId;
+
+
 
     protected $queryString = [
         'cant' => ['except' => '10'],
@@ -68,6 +77,31 @@ class ComprobanteList extends Component
         $this->igv = Impuesto::where('siglas', 'IGV')->value('valor'); //es el 18%
         $this->factoricbper = Impuesto::where('siglas', 'ICBPER')->value('valor'); //es 0.2
     }
+
+
+    // 👇 AQUÍ metes el helper
+    protected function setCompanyMailConfig(): void
+    {
+        $company = $this->company;
+
+        // si no hay datos de smtp en la BD, usamos lo del .env (Mailtrap, etc.)
+        if (! $company->smtp || ! $company->correo || ! $company->puerto) {
+            return;
+        }
+
+        config([
+            'mail.mailers.smtp.host'       => $company->smtp,
+            'mail.mailers.smtp.port'       => $company->puerto,
+            'mail.mailers.smtp.username'   => $company->correo,
+            'mail.mailers.smtp.password'   => $company->password,
+            'mail.mailers.smtp.encryption' => 'tls', // o ssl/null según tu caso
+            'mail.from.address'            => $company->correo,
+            'mail.from.name'               => $company->razonsocial ?? config('app.name'),
+        ]);
+    }
+
+
+
 
 
     public function updatingSearch()
@@ -358,4 +392,41 @@ class ComprobanteList extends Component
             'Content-Disposition' => 'attachment; filename="' . $fileName . '"',
         ]);
     } */
+
+
+    public function openEmailModal($comprobanteId)
+    {
+        $this->selectedComprobanteId = $comprobanteId;
+
+        $comprobante = Comprobante::with('customer')->findOrFail($comprobanteId);
+
+        // sugerimos un correo por defecto: del cliente o de la empresa
+        $this->email = $comprobante->customer->email
+            ?? $comprobante->customer->email
+            ?? $this->company->correo;
+
+        $this->resetValidation();
+        $this->showEmailModal = true;
+    }
+
+
+    public function sendEmail()
+    {
+        $this->validate([
+            'email' => ['required', 'email'],
+        ]);
+
+        $comprobante = Comprobante::findOrFail($this->selectedComprobanteId);
+
+        // ❌ NO LLAMAR A SMTP DE COMPANY
+        // $this->setCompanyMailConfig();
+
+        Mail::to($this->email)->send(new ComprobantePdfMail($comprobante));
+
+        $this->showEmailModal = false;
+
+        $this->emit('alert', 'El comprobante se envió correctamente al correo ' . $this->email);
+
+        $this->reset(['email', 'selectedComprobanteId']);
+    }
 }

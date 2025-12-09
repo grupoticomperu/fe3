@@ -879,7 +879,7 @@ class SunatService
         $pdfContent = $pdf->output();
         $this->boleta->pdf_path = 'fe/' . $this->company->razonsocial . '/invoices/pdf/' . $this->voucher->getName() . '.pdf';
         Storage::disk('s3')->put($this->boleta->pdf_path, $pdfContent, 'public');
-
+        //Storage::disk('s3')->put($this->boleta->pdf_path, $pdfContent);
         // Guardar la ruta en la base de datos
         $this->boleta->save();
     }
@@ -913,6 +913,31 @@ class SunatService
     }
 
 
+    public function generatePdfReportNota()
+    {
+
+        //$html = view('admin.comprobante.sunat_template', ['voucher' => $this->voucher, 'params' => $params])->render();
+        $html = view('admin.comprobante.notareports', ['company' => $this->company, 'boleta' => $this->boleta, 'temporals' => $this->temporals])->render();
+
+
+        // Generar el PDF utilizando Dompdf
+        $pdf = Pdf::loadHTML($html);
+
+        // Opciones de configuración del PDF
+        // $pdf->setPaper('A4', 'portrait');
+        $pdf->setPaper([0, 0, 212.625, 9999], 'portrait');
+
+
+
+
+        // Guardar el PDF en S3
+        $pdfContent = $pdf->output();
+        $this->boleta->pdf_path = 'fe/' . $this->company->razonsocial . '/invoices/pdf/' . $this->voucher->getName() . '.pdf';
+        Storage::disk('s3')->put($this->boleta->pdf_path, $pdfContent, 'public');
+
+        // Guardar la ruta en la base de datos
+        $this->boleta->save();
+    }
 
 
 
@@ -975,6 +1000,18 @@ class SunatService
     }
 
 
+
+
+
+
+
+
+
+
+
+
+
+    
 
 
     public function resumen() {}

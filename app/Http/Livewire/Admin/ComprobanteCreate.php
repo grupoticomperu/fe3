@@ -27,7 +27,7 @@ use Illuminate\Support\Collection;
 use App\Models\Comprobante_Product;
 use App\Models\Local_tipocomprobante;
 use Luecano\NumeroALetras\NumeroALetras;
-
+use Illuminate\Support\Facades\Storage;
 
 use Illuminate\Support\Facades\Http;
 
@@ -57,6 +57,12 @@ class ComprobanteCreate extends Component
     public $monedadescription;
     public $numDecimalesProducto = 2;
     public $numDecimalesComprobante = 2;
+
+
+    public $showWhatsappModal = false;   // para mostrar / ocultar el modal
+    public $whatsapp_phone;              // número ingresado
+    public $lastComprobanteId;           // id del comprobante recién creado
+    public $pdfUrl;                      // url pública del PDF en S3
 
     //public $salesCartInstance = 'salesCart';
     //public $carts = [];
@@ -95,7 +101,7 @@ class ComprobanteCreate extends Component
 
 
 
-    
+
 
 
 
@@ -492,7 +498,7 @@ class ComprobanteCreate extends Component
 
         $this->legends[] = [
             'code' => '1000',
-            'value' => $formatter->toInvoice($this->subtotall, 2)//decimales para la leyenda
+            'value' => $formatter->toInvoice($this->subtotall, 2) //decimales para la leyenda
         ];
 
         /* if (collect($this->invoice['details'])->whereNotIn('tipAfeIgv', ['10', '20', '30', '40'])->count()) {
@@ -818,7 +824,7 @@ class ComprobanteCreate extends Component
             return;
         }
 
-   
+
         $tipodocumento = Tipodocumento::find($this->tipodocumento_id); //ruc , dni
 
         $numecar = Str::length($this->ruc); //calcula la longitud de ruc, dni, ce, etc..
@@ -885,7 +891,7 @@ class ComprobanteCreate extends Component
         //buscamos en la tabla distrito
         if ($this->distrito) {
             $distrito = ucwords(strtolower($this->distrito));
-           // Buscar el distrito en la base de datos
+            // Buscar el distrito en la base de datos
             $distritoEncontrado = $provinciaEncontrado->districts()
                 ->where(function ($query) use ($distrito) {
                     $query->where('name', $distrito)
@@ -920,7 +926,7 @@ class ComprobanteCreate extends Component
             ]);
         };
 
-        
+
 
         $this->validate();
 
@@ -1116,8 +1122,41 @@ class ComprobanteCreate extends Component
         }
 
         //$sunat->generatePdfReport();
-        $sunat->generatePdfReport3();
+        //$sunat->generatePdfReport3();
         //$sunat->generatePdfReport2($this->serienumero);
+        // Generar el PDF y guardarlo en S3
+        $sunat->generatePdfReport3();
+        $boleta->refresh();
+
+        // Seguridad: verificar que exista pdf_path
+        if (! $boleta->pdf_path) {
+            $this->emit('alert', 'El comprobante se creó pero no se generó el PDF correctamente.');
+            return;
+        }
+
+
+        // Generamos un enlace temporal y firmado al PDF en S3
+        //$this->pdfUrl = Storage::disk('s3')->temporaryUrl(
+        //    $boleta->pdf_path,
+        //    now()->addHours(2) // por ejemplo: válido 2 horas
+        //);
+
+
+        // En este punto, $boleta ya tiene el campo pdf_path guardado por SunatService
+        // Obtenemos la URL pública desde S3
+        $this->pdfUrl = Storage::disk('s3')->url($boleta->pdf_path);
+
+        // Guardamos el id del comprobante para usarlo luego si hace falta
+        $this->lastComprobanteId = $comprobante->id;
+
+        // Mostramos modal para pedir número de WhatsApp
+        $this->showWhatsappModal = true;
+
+        $this->emit('alert', 'El comprobante se creó correctamente. Ingrese el número de WhatsApp para enviarlo.');
+
+        // IMPORTANTE: ya NO redirigimos aquí.
+        // Esperamos a que el usuario complete el número y confirme en el modal.
+
 
 
         /*  $sunat->send();
@@ -1133,9 +1172,9 @@ class ComprobanteCreate extends Component
 
         //$this->emitTo('admin.comprobante-list', 'render');
 
-        $this->emit('alert', 'El comprobante se creo correctamente');
+        //$this->emit('alert', 'El comprobante se creo correctamente');
 
-        return redirect()->route('admin.comprobante.list');
+        //return redirect()->route('admin.comprobante.list');
 
         //eliminar el temporal
 
@@ -1188,5 +1227,34 @@ class ComprobanteCreate extends Component
             : $this->numDecimalesComprobante;
 
         return round((float)$valor, $decimales);
+    }
+
+
+
+    public function sendWhatsapp()
+    {
+        // Valida el número (ajusta el patrón a tu formato real)
+        $this->validate([
+            'whatsapp_phone' => ['required', 'regex:/^[0-9]{9}$/'],
+        ], [
+            'whatsapp_phone.required' => 'Ingrese el número de WhatsApp.',
+            'whatsapp_phone.regex'    => 'Ingrese un número válido (9 dígitos).',
+        ]);
+
+        // Mensaje que se enviará por WhatsApp
+        // Ajusta el prefijo 51 si tu país es otro
+        $mensaje = "Hola, te envío tu comprobante {$this->serienumero}: {$this->pdfUrl}";
+        $waUrl   = "https://wa.me/51{$this->whatsapp_phone}?text=" . urlencode($mensaje);
+
+        // Disparamos un evento de navegador para abrir WhatsApp en una nueva pestaña
+        $this->dispatchBrowserEvent('open-whatsapp', [
+            'url' => $waUrl,
+        ]);
+
+        // Cerramos el modal y limpiamos el campo
+        $this->reset(['showWhatsappModal', 'whatsapp_phone']);
+
+        // Y ahora sí redirigimos a la lista de comprobantes
+        return redirect()->route('admin.comprobante.list');
     }
 }

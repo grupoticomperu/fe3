@@ -58,6 +58,7 @@ use App\Http\Controllers\admin\UsersRolesController;
 use App\Http\Livewire\Admin\ProductcompuestoCreatea;
 use App\Http\Controllers\admin\ComprobanteController;
 use App\Http\Controllers\admin\ConfigurationController;
+use App\Http\Controllers\Admin\FileController;
 use App\Http\Controllers\Admin\GuiaPdfController;
 use App\Http\Controllers\admin\ProductfamilieController;
 use App\Http\Controllers\admin\ProductatributeController;
@@ -77,6 +78,11 @@ use App\Http\Livewire\Admin\TransportistaList;
 use App\Http\Livewire\Admin\VehiculoCreate;
 use App\Http\Livewire\Admin\VehiculoEdit;
 use App\Http\Livewire\Admin\VehiculoList;
+
+
+// Nueva ruta segura para descargar cualquier comprobante (PDF, XML, CDR)
+Route::get('comprobantes/{comprobante}/download/{type}', [FileController::class, 'downloadFile'])
+    ->name('admin.comprobante.download');
 
 //Route::get('/', [HomeController::class, 'home'])->name('admin.home');
 Route::get('/tables', [TableController::class, 'showtables'])->name('admin.showtables');

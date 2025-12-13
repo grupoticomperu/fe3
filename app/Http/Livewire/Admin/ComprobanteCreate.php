@@ -1144,7 +1144,17 @@ class ComprobanteCreate extends Component
 
         // En este punto, $boleta ya tiene el campo pdf_path guardado por SunatService
         // Obtenemos la URL pública desde S3
-        $this->pdfUrl = Storage::disk('s3')->url($boleta->pdf_path);
+        //$this->pdfUrl = Storage::disk('s3')->url($boleta->pdf_path);
+
+        $this->pdfUrl = Storage::disk('s3')->temporaryUrl(
+            $boleta->pdf_path,
+            Carbon::now()->addMinutes(30) // Damos 24 horas de validez al enlace de WhatsApp
+        );
+
+        /*  return Storage::disk('s3')->temporaryUrl(
+            $pdfPath,
+            Carbon::now()->addMinutes(30) 
+        ); */
 
         // Guardamos el id del comprobante para usarlo luego si hace falta
         $this->lastComprobanteId = $comprobante->id;
@@ -1153,35 +1163,6 @@ class ComprobanteCreate extends Component
         $this->showWhatsappModal = true;
 
         $this->emit('alert', 'El comprobante se creó correctamente. Ingrese el número de WhatsApp para enviarlo.');
-
-        // IMPORTANTE: ya NO redirigimos aquí.
-        // Esperamos a que el usuario complete el número y confirme en el modal.
-
-
-
-        /*  $sunat->send();
-        $sunat->generatePdfReport(); */
-
-        //$temporals->each->delete();///luego activarlo
-
-        /* $xml = $this->see->getFactory()->getLastXml();
-        $this->invoice['xml'] = $this->see->getFactory()->getLastXml();
-        $this->invoice['hash'] = (new XmlUtils())->getHashSign($xml);
-        dd($this->invoice); */
-
-
-        //$this->emitTo('admin.comprobante-list', 'render');
-
-        //$this->emit('alert', 'El comprobante se creo correctamente');
-
-        //return redirect()->route('admin.comprobante.list');
-
-        //eliminar el temporal
-
-
-        //enviar mensaje de guardado
-
-
     }
 
 

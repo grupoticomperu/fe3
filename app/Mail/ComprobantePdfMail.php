@@ -10,6 +10,7 @@ use Illuminate\Mail\Mailables\Envelope;
 use Illuminate\Queue\SerializesModels;
 use App\Models\Comprobante;
 use Illuminate\Support\Facades\Storage;
+use Carbon\Carbon; // <-- Importar Carbon
 
 class ComprobantePdfMail extends Mailable
 {
@@ -37,7 +38,17 @@ class ComprobantePdfMail extends Mailable
             default => null,
         };
 
-        return $pdfPath ? Storage::disk('s3')->url($pdfPath) : '';
+        if (!$pdfPath) {
+            return '';
+        }
+
+        // CRÍTICO: Usar temporaryUrl() con 30 minutos de expiración.
+        return Storage::disk('s3')->temporaryUrl(
+            $pdfPath,
+            Carbon::now()->addMinutes(30) // Enlace válido por 30 minutos
+        );
+
+        //return $pdfPath ? Storage::disk('s3')->url($pdfPath) : '';
     }
 
     public function build()
@@ -66,5 +77,4 @@ class ComprobantePdfMail extends Mailable
     {
         return [];
     } */
-
 }

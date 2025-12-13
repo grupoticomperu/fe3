@@ -288,13 +288,24 @@
                                             @endif --}}
                                         {{-- para mostrar factura es 1 --}}
                                         @if ($comprobante->tipocomprobante_id == 1)
-                                            @if ($comprobante->factura->pdf_path)
-                                                {{--  <a href="{{ asset('storage/' . $comprobante->factura->pdf_path) }}" //funciona en local --}}
+                                            {{-- @if ($comprobante->factura->pdf_path)                                       
                                                 <a href="{{ Storage::disk('s3')->url($comprobante->factura->pdf_path) }}"
                                                     target="_blank">
 
                                                     <img class='h-6' src="/images/icons/pdf_cpe.svg"
                                                         alt="comprobante">
+                                                </a>
+                                            @endif --}}
+
+
+                                            {{-- En el bloque @if ($comprobante->tipocomprobante_id == 1) --}}
+                                            @if ($comprobante->factura->pdf_path)
+                                                {{-- AHORA USAMOS LA RUTA PROXY DE LARAVEL --}}
+                                                <a href="{{ route('admin.comprobante.download', ['comprobante' => $comprobante->id, 'type' => 'pdf']) }}"
+                                                    target="_blank">
+
+                                                    <img class='h-6' src="/images/icons/pdf_cpe.svg"
+                                                        alt="comprobante PDF">
                                                 </a>
                                             @endif
                                         @endif
@@ -367,6 +378,12 @@
                                                         alt="xml"></a>
                                             @endif
                                         @endif
+
+
+
+
+
+
                                         {{-- para el xml de boleta --}}
                                         @if ($comprobante->tipocomprobante_id == 2)
                                             @if ($comprobante->boleta->xml_path)
@@ -609,14 +626,10 @@
                                             @
                                         </button>
 
-                                        {{-- botón WhatsApp (W) lo dejas como está o luego lo cambiamos a Livewire si quieres) --}}
-                                        <a href="{{ route('admin.notadecredito.create', $comprobante->id) }}"
-                                            class="px-4 btn btn-blue">W</a>
-
-                                        {{-- ... resto de botones NC, GR tal como ya los tienes ... --}}
-
-
-
+                                        <button type="button" class="px-4 btn btn-blue"
+                                            wire:click="openWhatsappModal({{ $comprobante->id }})">
+                                            W
+                                        </button>
 
 
                                         {{--  @can('Comprobante Update') --}}
@@ -645,28 +658,7 @@
                                         {{--  @endcan --}}
 
 
-                                        {{-- @if ($comprobante->boleta->sunat_cdr_path != null or $comprobante->boleta->resumen_id != null or $comprobante->factura->sunat_cdr_path != null) --}}
 
-
-
-
-
-                                        {{-- <a href="" class="text-sm btn btn-orange">GR</a> --}}
-
-
-
-
-
-
-                                        {{-- <img class='h-6' src='/images/icons/xml_cdr.svg'/> --}}
-
-                                        {{-- @can('delete User') --}}
-
-                                        {{-- <a class="btn btn-red"
-                                                wire:click="$emit('deleteUser', {{ $userr->id }})">
-                                                <i class="fa-solid fa-trash-can"></i>
-                                            </a> --}}
-                                        {{--  @endcan --}}
 
                                     </td>
                                 </tr>
@@ -684,11 +676,6 @@
                         </div>
                     @endif
                 @else
-                    {{-- <div wire:init="loadUsers">
-
-                                </div> --}}
-
-
                     @if ($readyToLoad)
                         <div class="px-6 py-4">
                             <div class="flex items-center justify-center">
@@ -773,6 +760,49 @@
             </x-jet-button>
         </x-slot>
     </x-jet-dialog-modal>
+
+
+    <x-jet-dialog-modal wire:model="showWhatsappModal">
+        <x-slot name="title">
+            Enviar comprobante por WhatsApp
+        </x-slot>
+
+        <x-slot name="content">
+            <div class="mt-2">
+                <x-jet-label for="whatsapp" value="Número de WhatsApp" />
+                <x-jet-input id="whatsapp" type="text" class="block w-full mt-1" wire:model.defer="whatsapp"
+                    placeholder="Ej: 999888777" />
+                <x-jet-input-error for="whatsapp" class="mt-2" />
+            </div>
+
+            @if ($selectedComprobanteId)
+                <p class="mt-2 text-sm text-gray-500">
+                    Se enviará el PDF del comprobante seleccionado.
+                </p>
+            @endif
+        </x-slot>
+
+        <x-slot name="footer">
+            <x-jet-secondary-button wire:click="$set('showWhatsappModal', false)" wire:loading.attr="disabled">
+                Cancelar
+            </x-jet-secondary-button>
+
+            <x-jet-button class="ml-2" wire:click="sendWhatsapp" wire:loading.attr="disabled">
+                Enviar y continuar
+            </x-jet-button>
+        </x-slot>
+    </x-jet-dialog-modal>
+
+
+
+    @push('scripts')
+          <script>
+            window.addEventListener('open-whatsapp', event => {
+                const url = event.detail.url;
+                window.open(url, '_blank'); // abre WhatsApp Web / app
+            });
+        </script>
+    @endpush
 
 
 </div>

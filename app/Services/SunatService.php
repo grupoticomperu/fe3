@@ -26,6 +26,7 @@ use Greenter\XMLSecLibs\Sunat\SignedXml;
 use Greenter\Model\Despatch\Transportist;
 use Greenter\Model\Despatch\DespatchDetail;
 use Greenter\Model\Sale\FormaPagos\FormaPagoContado;
+use Greenter\Model\Sale\FormaPagos\FormaPagoCredito;
 use Greenter\Report\Resolver\DefaultTemplateResolver;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Dompdf\Dompdf;
@@ -179,8 +180,9 @@ class SunatService
         $docName = $this->buildCpeName();
 
         // XML de la guía
-        $this->boleta->xml_path = 'fe/' . $this->company->razonsocial . '/guides/xml/' . $docName . '.xml';
-        Storage::disk('s3')->put($this->boleta->xml_path, $xml, 'public');
+        //$this->boleta->xml_path = 'fe/' . $this->company->razonsocial . '/guides/xml/' . $docName . '.xml';
+        $this->boleta->xml_path = $this->company->razonsocial . '/guides/xml/' . $docName . '.xml';
+        Storage::disk('s3')->put($this->boleta->xml_path, $xml, 'private'); //cambie public por private
 
 
 
@@ -216,8 +218,9 @@ class SunatService
             //Storage::put($this->boleta->sunat_cdr_path, $cdrZip, 'public');
             /* $docName = $this->buildCpeName(); */
 
-            $this->boleta->sunat_cdr_path = 'fe/' . $this->company->razonsocial . '/guides/cdr/R-' . $this->voucher->getName() . '.zip';
-            Storage::disk('s3')->put($this->boleta->sunat_cdr_path, $cdrZip, 'public');
+            //$this->boleta->sunat_cdr_path = 'fe/' . $this->company->razonsocial . '/guides/cdr/R-' . $this->voucher->getName() . '.zip';
+            $this->boleta->sunat_cdr_path = $this->company->razonsocial . '/guides/cdr/R-' . $this->voucher->getName() . '.zip';
+            Storage::disk('s3')->put($this->boleta->sunat_cdr_path, $cdrZip, 'private'); //cambie public por private
 
             $this->boleta->save();
         }
@@ -400,6 +403,7 @@ class SunatService
             //->setFechaEmision($this->invoice['fechaEmision']) // Zona horaria: Lima
             ->setFechaEmision(new \DateTime($this->boleta->fechaemision)) //creo es en minusculaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
             ->setFormaPago(new FormaPagoContado()) // FormaPago: Contado
+            //->setFormaPago(new FormaPagoCredito()) // FormaPago: Credito
             ->setTipoMoneda($this->boleta->currency->name) // Sol - Catalog. 02
             ->setCompany($this->getCompany())
             ->setClient($this->getClient())
@@ -582,8 +586,9 @@ class SunatService
         Storage::put($this->boleta->xml_path, $xml, 'public'); //esto funciona en local */
 
 
-        $this->boleta->xml_path = 'fe/' . $this->company->razonsocial . '/invoices/xml/' . $this->voucher->getName() . '.xml';
-        Storage::disk('s3')->put($this->boleta->xml_path, $xml, 'public');
+        /* $this->boleta->xml_path = 'fe/' . $this->company->razonsocial . '/invoices/xml/' . $this->voucher->getName() . '.xml'; */
+        $this->boleta->xml_path = $this->company->razonsocial . '/invoices/xml/' . $this->voucher->getName() . '.xml';
+        Storage::disk('s3')->put($this->boleta->xml_path, $xml, 'private'); //estaba public lo puse private
 
 
 
@@ -605,8 +610,9 @@ class SunatService
         /* $this->boleta->sunat_cdr_path = "invoices/cdr/R-{$this->voucher->getName()}.zip";
         Storage::put($this->boleta->sunat_cdr_path, $this->result->getCdrZip(), 'public');//funciona bien en local */
 
-        $this->boleta->sunat_cdr_path = 'fe/' . $this->company->razonsocial . '/guides/cdr/R-' . $this->voucher->getName() . '.zip';
-        Storage::disk('s3')->put($this->boleta->sunat_cdr_path, $this->result->getCdrZip(), 'public');
+        $this->boleta->sunat_cdr_path = $this->company->razonsocial . '/invoices/cdr/R-' . $this->voucher->getName() . '.zip';
+        Storage::disk('s3')->put($this->boleta->sunat_cdr_path, $this->result->getCdrZip(), 'private'); //estaba public lo puse private
+
 
         $this->boleta->save();
 
@@ -876,9 +882,47 @@ class SunatService
 
 
         // Guardar el PDF en S3
-        $pdfContent = $pdf->output();
-        $this->boleta->pdf_path = 'fe/' . $this->company->razonsocial . '/invoices/pdf/' . $this->voucher->getName() . '.pdf';
-        Storage::disk('s3')->put($this->boleta->pdf_path, $pdfContent, 'public');
+
+        //$pdfContent = $pdf->output();
+        //$this->boleta->pdf_path = $this->company->razonsocial . '/invoices/pdf/' . $this->voucher->getName() . '.pdf';
+        //Storage::disk('s3')->put($this->boleta->pdf_path, $pdfContent, 'private');
+
+
+        try {
+            $pdfContent = $pdf->output();
+
+            // NOTA: Ajusté la ruta quitando 'fe/' ya que la ruta no la incluía en el código original. 
+            // Si necesitas 'fe/', añádela de nuevo.
+            $this->boleta->pdf_path = $this->company->razonsocial . '/invoices/pdf/' . $this->voucher->getName() . '.pdf';
+
+            // Intenta subir el archivo a S3
+            Storage::disk('s3')->put($this->boleta->pdf_path, $pdfContent, 'private');
+
+            // Guardar la ruta en la base de datos SOLO si la subida fue exitosa
+            $this->boleta->save();
+        } catch (S3Exception $e) {
+            // Manejo de errores específicos de AWS S3 (ej. 403 Forbidden, conexión)
+            // CRÍTICO: Registra o notifica el error de subida a S3
+            $errorMessage = 'Error de AWS S3 al subir el PDF: ' . $e->getMessage();
+
+            // Opcional: Lanzar la excepción para que sea manejada por Livewire/Laravel
+            // throw new Exception($errorMessage); 
+
+            // Opción recomendada: Emitir un evento de error para notificar al usuario en la vista
+            $this->emit('error', $errorMessage);
+
+            // Si la subida falló, no continuamos con el proceso.
+            return;
+        } catch (Exception $e) {
+            // Manejo de otros errores (ej. fallo al generar $pdf->output())
+            $errorMessage = 'Error inesperado al generar o subir el PDF: ' . $e->getMessage();
+            $this->emit('error', $errorMessage);
+            return;
+        }
+
+
+
+        //$this->boleta->pdf_path = 'fe/' . $this->company->razonsocial . '/invoices/pdf/' . $this->voucher->getName() . '.pdf';
         //Storage::disk('s3')->put($this->boleta->pdf_path, $pdfContent);
         // Guardar la ruta en la base de datos
         $this->boleta->save();
@@ -905,8 +949,9 @@ class SunatService
 
         // Guardar el PDF en S3
         $pdfContent = $pdf->output();
-        $this->boleta->pdf_path = 'fe/' . $this->company->razonsocial . '/guides/pdf/' . $this->voucher->getName() . '.pdf';
-        Storage::disk('s3')->put($this->boleta->pdf_path, $pdfContent, 'public');
+        //$this->boleta->pdf_path = 'fe/' . $this->company->razonsocial . '/guides/pdf/' . $this->voucher->getName() . '.pdf';
+        $this->boleta->pdf_path = $this->company->razonsocial . '/guides/pdf/' . $this->voucher->getName() . '.pdf';
+        Storage::disk('s3')->put($this->boleta->pdf_path, $pdfContent, 'private'); //estaba public lo puse private
 
         // Guardar la ruta en la base de datos
         $this->boleta->save();
@@ -1011,7 +1056,7 @@ class SunatService
 
 
 
-    
+
 
 
     public function resumen() {}

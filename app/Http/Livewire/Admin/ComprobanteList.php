@@ -15,6 +15,7 @@ use App\Models\Comprobante_Product;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
+use Aws\S3\Exception\S3Exception; // Incluir para diagnóstico (buena práctica)
 
 use Illuminate\Support\Facades\Mail;
 use App\Mail\ComprobantePdfMail;
@@ -35,6 +36,9 @@ class ComprobanteList extends Component
     public $showEmailModal = false;
     public $email;
     public $selectedComprobanteId;
+
+    public $showWhatsappModal = false;
+    public $whatsapp;
 
 
 
@@ -79,12 +83,12 @@ class ComprobanteList extends Component
     }
 
 
-    // 👇 AQUÍ metes el helper
-    protected function setCompanyMailConfig(): void
+    // helper para cambiar dinamicamente la configuración de correo según la empresa
+    /*  protected function setCompanyMailConfig(): void
     {
         $company = $this->company;
 
-        // si no hay datos de smtp en la BD, usamos lo del .env (Mailtrap, etc.)
+      
         if (! $company->smtp || ! $company->correo || ! $company->puerto) {
             return;
         }
@@ -94,12 +98,12 @@ class ComprobanteList extends Component
             'mail.mailers.smtp.port'       => $company->puerto,
             'mail.mailers.smtp.username'   => $company->correo,
             'mail.mailers.smtp.password'   => $company->password,
-            'mail.mailers.smtp.encryption' => 'tls', // o ssl/null según tu caso
+            'mail.mailers.smtp.encryption' => 'tls', 
             'mail.from.address'            => $company->correo,
             'mail.from.name'               => $company->razonsocial ?? config('app.name'),
         ]);
     }
-
+ */
 
 
 
@@ -254,7 +258,7 @@ class ComprobanteList extends Component
 
     public function generateXml(Comprobante $comprobante)
     {
-        //dd($comprobante);
+        //cuando no se envia a sunat queda pendiente de enviar y se guarda en temporal con state 1
         //$temporals = Comprobante_Product::where('comprobante_id', $comprobante->id)->get();
         //obtenemos temporals para factura y boleta
         if ($comprobante->tipocomprobante_id == 1 or $comprobante->tipocomprobante_id == 2) {
@@ -264,10 +268,10 @@ class ComprobanteList extends Component
                 ->where('state', 1) //el state 1 indica que el comprobante esta en el temporal, para indicar que se guardo pero no se termino de enviar a sunat
                 ->where('comprobante_id', $comprobante->id)->get(); //state 0 tiene los temporales actuales, 1 ya esta grabado pero no enviado a sunat
             //el state 0 indica que se mostrara al realizar el comprobante, el state 1 no se muestra pero esta en la tabla hasta que se envie a SUNAT
-        } elseif ($comprobante->tipocomprobante_id == 3 or $comprobante->tipocomprobante_id == 5) {
+        } elseif ($comprobante->tipocomprobante_id == 3 or $comprobante->tipocomprobante_id == 5) { //3nc factura 5 nc boleta
             //el detalle se guardara en el teporal
             $detalle = Comprobante_Product::where('comprobante_id', $comprobante->id)
-                ->where('company_id', auth()->user()->employee->company->id)->get(); //falta restringir para que solo ,uestre lo que le corresponde osea no de otro local ni de otra empresa
+                ->where('company_id', auth()->user()->employee->company->id)->get(); //falta restringir para que solo ,muestre lo que le corresponde osea no de otro local ni de otra empresa
             $this->llenartemporal($detalle);
             //obtenemos temporal de nc factura y boleta
             $temporals = Temporalnc::where('company_id', auth()->user()->employee->company->id)
@@ -409,6 +413,21 @@ class ComprobanteList extends Component
         $this->showEmailModal = true;
     }
 
+    public function openWhatsappModal($comprobanteId)
+    {
+        $this->selectedComprobanteId = $comprobanteId;
+
+        $comprobante = Comprobante::with('customer')->findOrFail($comprobanteId);
+
+        // sugerimos un correo por defecto: del cliente o de la empresa
+        $this->whatsapp = $comprobante->customer->email
+            ?? $comprobante->customer->email
+            ?? $this->company->correo;
+
+        $this->resetValidation();
+        $this->showWhatsappModal = true;
+    }
+
 
     public function sendEmail()
     {
@@ -418,9 +437,7 @@ class ComprobanteList extends Component
 
         $comprobante = Comprobante::findOrFail($this->selectedComprobanteId);
 
-        // ❌ NO LLAMAR A SMTP DE COMPANY
-        // $this->setCompanyMailConfig();
-
+        // CRÍTICO: Esto ahora usa el ComprobantePdfMail actualizado, que genera la URL temporal.
         Mail::to($this->email)->send(new ComprobantePdfMail($comprobante));
 
         $this->showEmailModal = false;
@@ -428,5 +445,75 @@ class ComprobanteList extends Component
         $this->emit('alert', 'El comprobante se envió correctamente al correo ' . $this->email);
 
         $this->reset(['email', 'selectedComprobanteId']);
+    }
+
+
+
+    public function sendWhatsapp()
+    {
+        // Valida el número (ajusta el patrón a tu formato real)
+        $this->validate([
+            'whatsapp' => ['required', 'regex:/^[0-9]{9}$/'],
+        ], [
+            'whatsapp.required' => 'Ingrese el número de WhatsApp.',
+            'whatsapp.regex'    => 'Ingrese un número válido (9 dígitos).',
+        ]);
+
+        $comprobante = Comprobante::findOrFail($this->selectedComprobanteId);
+        $comprobante = $comprobante->load(['factura', 'boleta', 'ncfactura', 'ncboleta', 'guia']);
+
+        $pdfPath = match ($comprobante->tipocomprobante_id) {
+            1 => optional($comprobante->factura)->pdf_path,
+            2 => optional($comprobante->boleta)->pdf_path,
+            3 => optional($comprobante->ncfactura)->pdf_path,
+            5 => optional($comprobante->ncboleta)->pdf_path,
+            7 => optional($comprobante->guia)->pdf_path,
+            default => null,
+        };
+
+        if (!$pdfPath) {
+            $this->emit('error', 'Ruta PDF no encontrada para este comprobante.');
+            $this->reset('showWhatsappModal');
+            return;
+        }
+
+
+        $signedUrl = '';
+        try {
+            $signedUrl = Storage::disk('s3')->temporaryUrl(
+                $pdfPath,
+                Carbon::now()->addMinutes(60) // Enlace válido por 1 hora (60 minutos)
+            );
+        } catch (S3Exception $e) {
+            // En caso de fallo de permisos/credenciales de S3
+            $this->emit('error', 'Error S3: No se pudo generar el enlace. Revise sus claves.');
+            $this->reset('showWhatsappModal');
+            return;
+        }
+     
+    // --------------------------------------------------------------------
+    // 2. CONSTRUIR ENLACE DE WHATSAPP
+    // --------------------------------------------------------------------
+    // Mensaje que se enviará por WhatsApp. Usamos la variable $signedUrl
+    $mensaje = "Hola, te envío tu comprobante {$comprobante->serienumero}. El enlace (válido por 1 hora) es: {$signedUrl}";
+    
+    // Asegúrate de que el prefijo del país es correcto (51 para Perú)
+    $waUrl = "https://wa.me/51{$this->whatsapp}?text=" . urlencode($mensaje); 
+
+    // --------------------------------------------------------------------
+    // 3. DISPARAR EVENTO
+    // --------------------------------------------------------------------
+    // Disparamos un evento de navegador para que JavaScript abra WhatsApp en una nueva pestaña
+    $this->dispatchBrowserEvent('open-whatsapp', [
+        'url' => $waUrl,
+    ]);
+
+    // Cerramos el modal
+    $this->reset(['showWhatsappModal', 'whatsapp']); // Limpiar también el número
+    
+    // Opcional: emitir un mensaje de éxito
+    $this->emit('success', 'Enlace de WhatsApp generado y disparado.');
+
+
     }
 }

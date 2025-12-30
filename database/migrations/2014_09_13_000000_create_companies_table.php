@@ -43,11 +43,12 @@ return new class extends Migration
             $table->string('solpass')->nullable();
             $table->text('certificado')->nullable();
             $table->string('certificate_path')->nullable();
+            //$table->string('certificate_password')->nullable();
             $table->date('fechainiciocertificado')->nullable();
             $table->date('fechafincertificado')->nullable();
             $table->string('cliente_id')->nullable();
             $table->string('cliente_secret')->nullable();
-            $table->boolean('production')->default(0);//si no
+            $table->boolean('production')->default(0); //si no
             $table->boolean('state')->default(1);
             $table->string('ublversion')->nullable();
             $table->decimal('detraccion', 10, 4)->default(700);
@@ -55,6 +56,26 @@ return new class extends Migration
             $table->unsignedBigInteger('currency_id')->nullable();
             $table->foreign('currency_id')->references('id')->on('currencies')->onDelete('cascade');
 
+
+
+            $table->unsignedBigInteger('ncboletadiseno_id')->nullable();
+            $table->foreign('ncboletadiseno_id')->references('id')->on('ncboletadisenos')->onDelete('cascade');
+
+
+            $table->unsignedBigInteger('ncfacturadiseno_id')->nullable();
+            $table->foreign('ncfacturadiseno_id')->references('id')->on('ncfacturadisenos')->onDelete('cascade');
+
+
+            $table->unsignedBigInteger('guiadiseno_id')->nullable();
+            $table->foreign('guiadiseno_id')->references('id')->on('guiadisenos')->onDelete('cascade');
+
+
+            $table->unsignedBigInteger('facturadiseno_id')->nullable();
+            $table->foreign('facturadiseno_id')->references('id')->on('facturadisenos')->onDelete('cascade');
+
+
+            $table->unsignedBigInteger('boletadiseno_id')->nullable();
+            $table->foreign('boletadiseno_id')->references('id')->on('boletadisenos')->onDelete('cascade');
 
 
 

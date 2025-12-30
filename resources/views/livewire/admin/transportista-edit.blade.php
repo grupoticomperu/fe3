@@ -1,91 +1,177 @@
 <div>
     <x-slot name="header">
-        <h2 class="text-xl font-semibold leading-tight text-gray-800">
-            {{ __('Edición de Transportista') }}
-        </h2>
+        <div class="flex items-center justify-between">
+            <div>
+                <h2 class="text-xl font-semibold text-gray-800">
+                    {{ __('Edición de Transportista') }}
+                </h2>
+                <p class="mt-1 text-sm text-gray-500">
+                    Actualiza los datos del transportista y define si estará activo o como predeterminado.
+                </p>
+            </div>
+
+            <a href="{{ route('transportista.list') ?? url()->previous() }}"
+                class="inline-flex items-center px-4 py-2 text-sm font-semibold text-gray-700 bg-white border border-gray-200 rounded-lg hover:bg-gray-50">
+                ← Volver
+            </a>
+        </div>
     </x-slot>
 
-    <div class="grid px-4 mx-auto mt-4 max-w-7xl sm:px-6 lg:px-8">
-        <div class="px-3 bg-white">
-            <div class="card card-primary card-outline">
-                <div class="card-body box-profile">
+    <div class="px-4 py-6 mx-auto max-w-7xl sm:px-6 lg:px-8">
+        <div class="bg-white border border-gray-200 shadow-sm rounded-2xl">
 
-                    <div>
-                        <div class="grid gap-4 p-4 mt-4 mb-4 ml-1 bg-blue-100 border border-gray-400 lg:grid-cols-4">
+            {{-- Header Card --}}
+            <div class="flex items-start justify-between px-6 py-5 border-b border-gray-100">
+                <div>
+                    <h3 class="text-lg font-semibold text-gray-800">Datos del transportista</h3>
+                    <p class="mt-1 text-sm text-gray-500">Revisa y actualiza la información.</p>
+                </div>
 
-                            <!-- Tipo Documento -->
-                            <div>
-                                <x-jet-label value="Tipo Documento" />
-                                <select wire:model="tipodocumento_id"
-                                    class="w-full h-10 border-gray-300 rounded-md shadow-sm">
-                                    <option value="" selected disabled>Seleccione</option>
-                                    @foreach ($tipodocumentos as $td)
-                                        <option value="{{ $td->id }}">{{ $td->abbreviation }}</option>
-                                    @endforeach
-                                </select>
-                                <x-jet-input-error for="tipodocumento_id" />
+                <div class="flex items-center gap-2 px-3 py-1 text-xs font-semibold text-amber-700 bg-amber-50 rounded-full">
+                    <span class="w-2 h-2 bg-amber-500 rounded-full"></span>
+                    Modo edición
+                </div>
+            </div>
+
+            {{-- Body --}}
+            <div class="p-6">
+                <div class="grid grid-cols-1 gap-x-8 gap-y-6 md:grid-cols-2 lg:grid-cols-4">
+
+                    {{-- Tipo Documento --}}
+                    <div class="lg:col-span-1">
+                        <x-jet-label value="Tipo Documento" />
+                        <select wire:model="tipodocumento_id"
+                            class="w-full h-11 mt-1 border-gray-300 rounded-xl shadow-sm
+                                   focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50">
+                            <option value="" selected disabled>Seleccione</option>
+                            @foreach ($tipodocumentos as $td)
+                                <option value="{{ $td->id }}">{{ $td->abbreviation }}</option>
+                            @endforeach
+                        </select>
+                        <x-jet-input-error for="tipodocumento_id" class="mt-2" />
+                    </div>
+
+                    {{-- Número Documento --}}
+                    <div class="lg:col-span-1">
+                        <x-jet-label value="Número (RUC, DNI...)" />
+                        <x-jet-input wire:model="numdoc" type="text"
+                            placeholder="Ej: 20447393302"
+                            class="w-full h-11 mt-1 uppercase" />
+                        <x-jet-input-error for="numdoc" class="mt-2" />
+                    </div>
+
+                    {{-- Razón Social --}}
+                    <div class="md:col-span-2 lg:col-span-2">
+                        <x-jet-label value="Razón Social / Nombre" />
+                        <x-jet-input wire:model.defer="nomrazonsocial" type="text"
+                            placeholder="Ej: Transportes Los Andes SAC"
+                            class="w-full h-11 mt-1" />
+                        <x-jet-input-error for="nomrazonsocial" class="mt-2" />
+                    </div>
+
+                    {{-- Dirección --}}
+                    <div class="md:col-span-2 lg:col-span-3">
+                        <x-jet-label value="Dirección" />
+                        <x-jet-input wire:model.defer="address" type="text"
+                            placeholder="Ej: Av. Principal 123 - Lima"
+                            class="w-full h-11 mt-1" />
+                        <x-jet-input-error for="address" class="mt-2" />
+                    </div>
+
+                    {{-- Nro MTC --}}
+                    <div class="lg:col-span-1">
+                        <x-jet-label value="Número MTC" />
+                        <x-jet-input wire:model.defer="nromtc" type="text"
+                            placeholder="Ej: MTC-000123"
+                            class="w-full h-11 mt-1" />
+                        <x-jet-input-error for="nromtc" class="mt-2" />
+                    </div>
+
+                    {{-- Predeterminado (toggle bonito) --}}
+                    <div class="md:col-span-1 lg:col-span-2">
+                        <div class="p-4 border border-gray-200 rounded-2xl bg-gray-50">
+                            <div class="flex items-center justify-between gap-4">
+                                <div>
+                                    <p class="text-sm font-semibold text-gray-800">Predeterminado</p>
+                                    <p class="text-xs text-gray-500">Se seleccionará por defecto.</p>
+                                </div>
+
+                                <button type="button" wire:click="$toggle('predeterminado')"
+                                    class="relative inline-flex items-center w-12 h-7 rounded-full transition
+                                        {{ $predeterminado ? 'bg-emerald-500' : 'bg-gray-300' }}">
+                                    <span class="inline-block w-5 h-5 bg-white rounded-full transform transition
+                                        {{ $predeterminado ? 'translate-x-6' : 'translate-x-1' }}"></span>
+                                </button>
                             </div>
 
-                            <!-- Número de Documento -->
-                            <div>
-                                <x-jet-label value="Número (RUC, DNI...)" />
-                                <x-jet-input wire:model="numdoc" type="text"
-                                    class="w-full h-10 uppercase" />
-                                <x-jet-input-error for="numdoc" />
+                            <div class="mt-2 text-xs font-semibold
+                                {{ $predeterminado ? 'text-emerald-700' : 'text-gray-500' }}">
+                                {{ $predeterminado ? 'Sí, predeterminado' : 'No, normal' }}
                             </div>
 
-                            <!-- Razón Social -->
-                            <div class="col-span-2">
-                                <x-jet-label value="Razón Social" />
-                                <x-jet-input wire:model.defer="nomrazonsocial" type="text"
-                                    class="w-full h-10" />
-                                <x-jet-input-error for="nomrazonsocial" />
-                            </div>
-
-                            <!-- Dirección -->
-                            <div class="col-span-3">
-                                <x-jet-label value="Dirección" />
-                                <x-jet-input wire:model.defer="address" type="text"
-                                    class="w-full h-10" />
-                                <x-jet-input-error for="address" />
-                            </div>
-
-                            <!-- Número MTC -->
-                            <div>
-                                <x-jet-label value="Número MTC" />
-                                <x-jet-input wire:model.defer="nromtc" type="text"
-                                    class="w-full h-10" />
-                                <x-jet-input-error for="nromtc" />
-                            </div>
-
-                            <!-- Predeterminado -->
-                            <div>
-                                <x-jet-label value="Predeterminado" />
-                                <input type="checkbox" wire:model="predeterminado"
-                                    class="h-5 w-5">
-                            </div>
-
-                            <!-- Estado -->
-                            <div>
-                                <x-jet-label value="Estado" />
-                                <input type="checkbox" wire:model="state"
-                                    class="h-5 w-5">
-                            </div>
-
+                            <x-jet-input-error for="predeterminado" class="mt-2" />
                         </div>
+                    </div>
 
-                        <!-- Botón Actualizar -->
-                        <x-jet-button wire:click="update"
-                            wire:loading.attr="disabled"
-                            wire:target="update"
-                            class="w-full mt-4 mb-3 disabled:opacity-25">
-                            <i class="mx-2 fa-regular fa-floppy-disk"></i> Actualizar
-                        </x-jet-button>
+                    {{-- Estado (toggle con estilo “activo/inactivo”) --}}
+                    <div class="md:col-span-1 lg:col-span-2">
+                        <div class="p-4 border rounded-2xl shadow-sm transition
+                            {{ $state ? 'bg-emerald-50 border-emerald-200' : 'bg-rose-50 border-rose-200' }}">
 
+                            <div class="flex items-center justify-between gap-4">
+                                <div class="flex items-start gap-3">
+                                    <div class="flex items-center justify-center w-10 h-10 rounded-xl text-lg
+                                        {{ $state ? 'bg-emerald-200' : 'bg-rose-200' }}">
+                                        {{ $state ? '✅' : '⛔' }}
+                                    </div>
+
+                                    <div>
+                                        <p class="text-sm font-semibold
+                                            {{ $state ? 'text-emerald-800' : 'text-rose-800' }}">
+                                            {{ $state ? 'Activo' : 'Inactivo' }}
+                                        </p>
+
+                                        <p class="mt-1 text-xs
+                                            {{ $state ? 'text-emerald-700' : 'text-rose-700' }}">
+                                            {{ $state ? 'Se mostrará y podrá seleccionarse.' : 'No se mostrará en listas.' }}
+                                        </p>
+                                    </div>
+                                </div>
+
+                                <button type="button" wire:click="$toggle('state')"
+                                    class="px-4 py-2 text-sm font-semibold rounded-xl transition shadow-sm
+                                        {{ $state
+                                            ? 'bg-white text-emerald-800 border border-emerald-200 hover:bg-emerald-100'
+                                            : 'bg-white text-rose-800 border border-rose-200 hover:bg-rose-100' }}">
+                                    {{ $state ? 'Desactivar' : 'Activar' }}
+                                </button>
+                            </div>
+
+                            <x-jet-input-error for="state" class="mt-2" />
+                        </div>
                     </div>
 
                 </div>
+
+                {{-- Acciones --}}
+                <div class="flex flex-col gap-3 mt-8 sm:flex-row sm:items-center sm:justify-end">
+                    <a href="{{ route('transportista.list') ?? url()->previous() }}"
+                        class="inline-flex items-center justify-center px-5 py-2.5 text-sm font-semibold text-gray-700 bg-white border border-gray-200 rounded-xl hover:bg-gray-50">
+                        Cancelar
+                    </a>
+
+                    <button wire:click="update" wire:loading.attr="disabled" wire:target="update"
+                        class="inline-flex items-center justify-center px-5 py-2.5 text-sm font-semibold text-white bg-indigo-600 rounded-xl hover:bg-indigo-700 disabled:opacity-25">
+                        <span wire:loading.remove wire:target="update">
+                            <i class="mr-2 fa-regular fa-floppy-disk"></i> Actualizar
+                        </span>
+                        <span wire:loading wire:target="update">
+                            Actualizando...
+                        </span>
+                    </button>
+                </div>
             </div>
+
         </div>
     </div>
 </div>

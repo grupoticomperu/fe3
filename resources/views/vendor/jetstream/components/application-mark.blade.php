@@ -6,7 +6,7 @@ echo '<?xml version="1.0" standalone="no"?>'; // Encerrar correctamente la decla
 
 {{-- <img class="object-cover w-40 h-20 rounded-sm" src="{{asset('img/usuarios.jpg')}}" alt=""> --}}
 @if(auth()->user()->employee->company->logo)
-    <img class="object-cover w-20 h-10 rounded-sm"  src="{{ Storage::disk('s3')->url(auth()->user()->employee->company->logo) }}" alt="TICOM SOFTWARE">
+    <img class="object-cover w-20 h-10 rounded-sm"  src="{{ Storage::disk('s3_public')->url(auth()->user()->employee->company->logo) }}" alt="TICOM SOFTWARE">
 @else
 
     <svg version="1.0" xmlns="http://www.w3.org/2000/svg"

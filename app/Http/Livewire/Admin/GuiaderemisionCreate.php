@@ -346,7 +346,9 @@ class GuiaderemisionCreate extends Component
         $sunat->getSeeApi($this->company);
         $sunat->setDespatch();
         $sunat->sendDespatch();
-        $sunat->generatePdfReportGuia();
+
+        //$sunat->generatePdfReportGuia($this->company->guiadiseno->nameblade);
+        $sunat->generateGuiaDiseno($this->company->guiadiseno->nameblade);
 
         $this->isCreated = true;
 

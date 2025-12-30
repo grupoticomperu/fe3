@@ -99,5 +99,10 @@ class DatabaseSeeder extends Seeder
         //$this->call(ProductsTableSeeder::class);
         //$this->call(TenantsTableSeeder::class);
                     
+        /* $this->call(BoletadisenosTableSeeder::class);
+        $this->call(FacturadisenosTableSeeder::class);
+        $this->call(GuiadisenosTableSeeder::class);
+        $this->call(NcboletadisenosTableSeeder::class);
+        $this->call(NcfacturadisenosTableSeeder::class); */
     }
 }

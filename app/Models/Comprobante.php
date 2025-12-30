@@ -11,7 +11,9 @@ class Comprobante extends Model
 
     protected $guarded = ['id', 'created_at', 'updated_at'];
 
-
+    protected $casts = [
+        'fechaemision' => 'datetime',
+    ];
 
 
     //relacion de uno a muchos inversa

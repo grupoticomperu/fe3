@@ -45,4 +45,31 @@ class Company extends Model
     {
         return $this->belongsTo(District::class);
     }
+
+    public function boletadiseno()
+    {
+        return $this->belongsTo(Boletadiseno::class);
+    }
+
+    public function facturadiseno()
+    {
+        return $this->belongsTo(Facturadiseno::class);
+    }
+
+
+    public function guiadiseno()
+    {
+        return $this->belongsTo(Guiadiseno::class);
+    }
+
+
+    public function ncfacturadiseno()
+    {
+        return $this->belongsTo(Ncfacturadiseno::class);
+    }
+
+    public function ncboletadiseno()
+    {
+        return $this->belongsTo(Ncboletadiseno::class);
+    }
 }

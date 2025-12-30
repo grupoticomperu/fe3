@@ -254,8 +254,8 @@ class NotadecreditoCreate extends Component
             'icbper' => $this->icbper,
             'totalimpuestos' => $this->totalimpuestos,
             'valorventa' => $this->valorventa,
-            'subtotal' => $this->subtotall,
-            'mtoimpventa' => $this->mtoimpventa,
+            'subtotal' => $this->subtotall,//monto total
+            'mtoimpventa' => $this->mtoimpventa,//monto total redondeado
             'redondeo' => $this->redondeo,
             'legends' => json_encode($this->getLegends()),
             'serienumero' => $this->serienumero,
@@ -332,7 +332,8 @@ class NotadecreditoCreate extends Component
         }
         //facturacion electronica
         //$boleta es la ncfactura o ncBoleta que se genero
-        $sunat = new SunatService($comprobante, $this->company, $temporals, $boleta, null, null);
+
+        $sunat = new SunatService($comprobante, $this->company, $temporals, $boleta, $this->total, null);
 
         $see = $sunat->getSee();
         $note = $sunat->setNota();
@@ -357,7 +358,22 @@ class NotadecreditoCreate extends Component
 
         ///$sunat->generatePdfReport();
 
-        $sunat->generatePdfReportNota();
+        switch ($this->comprobante->tipocomprobante_id) {
+
+            case '1':
+                $sunat->generatePdfFacturaNota($this->company->ncfacturadiseno->nameblade);
+                break;
+            case '2':
+                $sunat->generatePdfBoletaNota($this->company->ncboletadiseno->nameblade);
+                break;
+            default:
+                break;
+        }
+
+
+        //$sunat->generatePdfReportNota();
+        //$sunat->generatePdfBoletatNota();
+        //$sunat->generatePdfFacturaNota();
 
         /* $result = $sunat->send();
         $sunat->generatePdfReport();

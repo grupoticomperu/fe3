@@ -31,8 +31,12 @@ use Greenter\Report\Resolver\DefaultTemplateResolver;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Dompdf\Dompdf;
 use Dompdf\Options;
+use Illuminate\Support\Facades\Crypt;
 
 use Illuminate\Support\Facades\Log;
+use Carbon\Carbon;
+use SimpleSoftwareIO\QrCode\Facades\QrCode;
+
 
 class SunatService
 {
@@ -57,14 +61,7 @@ class SunatService
         $this->totalenletras = $totalenletras;
         // $this->boletas = $boletas;
 
-        //dd($this->company->certificate_path);
-        //dd(Storage::disk('s3')->exists($this->company->certificate_path));
-        /*  try {
-            $content = Storage::disk('s3')->get('fe/TICOM/certificados/t2ET55ZXrAegoFN2KsG22nA3qOaUo6wtX6teSdRA.txt');
-            dd('OK ✅', substr($content, 0, 200)); // solo los primeros 200 caracteres
-        } catch (\Exception $e) {
-            dd('Error ❌', $e->getMessage());
-        } */
+
     }
 
     public function getSee()
@@ -78,6 +75,20 @@ class SunatService
         $endpoint = $this->company->production ? SunatEndpoints::FE_PRODUCCION : SunatEndpoints::FE_BETA;
 
         $this->see = new See();
+        // Leer PEM desde S3 (contenido)
+        $pem = Storage::disk('s3')->get($this->company->certificate_path);
+
+        // (Opcional pero recomendado) limpiar a solo CERT + PRIVATE KEY
+        preg_match('/-----BEGIN CERTIFICATE-----.*?-----END CERTIFICATE-----/s', $pem, $cert);
+        preg_match('/-----BEGIN (?:RSA )?PRIVATE KEY-----.*?-----END (?:RSA )?PRIVATE KEY-----/s', $pem, $key);
+
+        if (empty($cert[0]) || empty($key[0])) {
+            throw new \Exception('El PEM en S3 no contiene CERTIFICATE y PRIVATE KEY.');
+        }
+
+        $pemClean = $cert[0] . "\n" . $key[0];
+
+        $this->see->setCertificate($pemClean);
 
         // $path = public_path('storage/public/certificates/LLAMAPECERTIFICADODEMO20447393302_cert_out.pem');
 
@@ -89,10 +100,17 @@ class SunatService
 
 
         //file_get_contents(public_path('certificates/LLAMAPECERTIFICADODEMO20447393302_cert_out.pem'));
-        $this->see->setCertificate(Storage::get("certificates/LLAMAPECERTIFICADODEMO20447393302_cert_out.pem"));
+        //$this->see->setCertificate(Storage::get("certificates/LLAMAPECERTIFICADODEMO20447393302_cert_out.pem"));
+
+        // 1) Leer el certificado desde S3 (contenido binario)
 
 
 
+
+        // 2) Pasarlo a Greenter (PFX/P12)
+        //$this->see->setCertificate($pemClean);
+        //$this->see->setCertificate($certContent);
+        //$this->see->setClaveCertificado($certPassword);
 
         //$this->see->setCertificate(Storage::disk('s3')->get($this->company->certificate_path));
         //Storage::disk('s3')->url($logoback)
@@ -585,11 +603,9 @@ class SunatService
         /* $this->boleta->xml_path = 'invoices/xml/' . $this->voucher->getName() . '.xml';
         Storage::put($this->boleta->xml_path, $xml, 'public'); //esto funciona en local */
 
-
         /* $this->boleta->xml_path = 'fe/' . $this->company->razonsocial . '/invoices/xml/' . $this->voucher->getName() . '.xml'; */
         $this->boleta->xml_path = $this->company->razonsocial . '/invoices/xml/' . $this->voucher->getName() . '.xml';
         Storage::disk('s3')->put($this->boleta->xml_path, $xml, 'private'); //estaba public lo puse private
-
 
 
         // Verificamos que la conexión con SUNAT fue exitosa.
@@ -849,6 +865,165 @@ class SunatService
 
 
 
+
+    public function generateFacturaDiseno($generatefactura)
+    {
+
+        // RUC|TIPO|SERIE|NUM|IGV|TOTAL|FECHA|TIPODOC|NRODOC|HASH
+        $tipo = '01'; // FACTURA
+        $fecha = Carbon::parse($this->boleta->fechaemision)->format('Y-m-d');
+
+        $tipoDocCli = (string) $this->comprobante->tipodocumento->codigo;
+        $nroDocCli  = (string) $this->comprobante->customer->numdoc;
+        $hash = (string) ($this->boleta->hash ?? '');
+
+        $igv   = number_format((float)$this->comprobante->mtoigv, 2, '.', '');
+        $total = number_format((float)$this->total, 2, '.', '');
+
+        $qrText = "{$this->company->ruc}|{$tipo}|{$this->boleta->serie}|{$this->boleta->numero}|{$igv}|{$total}|{$fecha}|{$tipoDocCli}|{$nroDocCli}|{$hash}";
+
+        $qrSvg = QrCode::format('svg')
+            ->size(160)
+            ->margin(1)
+            ->generate($qrText);
+
+        $qrBase64 = base64_encode($qrSvg);
+
+
+        // 3) Render HTML pasando qrBase64 y qrText
+        $html = view($generatefactura, ['company' => $this->company, 'comprobante' => $this->comprobante, 'boleta' => $this->boleta, 'temporals' => $this->temporals, 'total' => $this->total, 'totalenletras' => $this->totalenletras, 'qrBase64' => $qrBase64])->render();
+
+        // Generar el PDF utilizando Dompdf
+        $pdf = Pdf::loadHTML($html);
+
+        // Opciones de configuración del PDF
+        // $pdf->setPaper('A4', 'portrait');
+        $pdf->setPaper([0, 0, 212.625, 9999], 'portrait');
+
+        try {
+            $pdfContent = $pdf->output();
+
+            // NOTA: Ajusté la ruta quitando 'fe/' ya que la ruta no la incluía en el código original. 
+            // Si necesitas 'fe/', añádela de nuevo.
+            $this->boleta->pdf_path = $this->company->razonsocial . '/invoices/pdf/' . $this->voucher->getName() . '.pdf';
+
+            // Intenta subir el archivo a S3
+            Storage::disk('s3')->put($this->boleta->pdf_path, $pdfContent, 'private');
+
+            // Guardar la ruta en la base de datos SOLO si la subida fue exitosa
+            //$this->boleta->save();
+        } catch (S3Exception $e) {
+            // Manejo de errores específicos de AWS S3 (ej. 403 Forbidden, conexión)
+            // CRÍTICO: Registra o notifica el error de subida a S3
+            $errorMessage = 'Error de AWS S3 al subir el PDF: ' . $e->getMessage();
+
+            // Opcional: Lanzar la excepción para que sea manejada por Livewire/Laravel
+            // throw new Exception($errorMessage); 
+
+            // Opción recomendada: Emitir un evento de error para notificar al usuario en la vista
+            $this->emit('error', $errorMessage);
+
+            // Si la subida falló, no continuamos con el proceso.
+            return;
+        } catch (Exception $e) {
+            // Manejo de otros errores (ej. fallo al generar $pdf->output())
+            $errorMessage = 'Error inesperado al generar o subir el PDF: ' . $e->getMessage();
+            $this->emit('error', $errorMessage);
+            return;
+        }
+
+
+
+        //$this->boleta->pdf_path = 'fe/' . $this->company->razonsocial . '/invoices/pdf/' . $this->voucher->getName() . '.pdf';
+        //Storage::disk('s3')->put($this->boleta->pdf_path, $pdfContent);
+        // Guardar la ruta en la base de datos
+        $this->boleta->save();
+    }
+
+
+
+    public function generateBoletaDiseno($generateboleta)
+    {
+        // RUC|TIPO|SERIE|NUM|IGV|TOTAL|FECHA|TIPODOC|NRODOC|HASH
+        $tipo = '03'; // boleta
+        $fecha = Carbon::parse($this->boleta->fechaemision)->format('Y-m-d');
+
+        $tipoDocCli = (string) $this->comprobante->tipodocumento->codigo;
+        $nroDocCli  = (string) $this->comprobante->customer->numdoc;
+        $hash = (string) ($this->boleta->hash ?? '');
+
+        $igv   = number_format((float)$this->comprobante->mtoigv, 2, '.', '');
+        $total = number_format((float)$this->total, 2, '.', '');
+
+        $qrText = "{$this->company->ruc}|{$tipo}|{$this->boleta->serie}|{$this->boleta->numero}|{$igv}|{$total}|{$fecha}|{$tipoDocCli}|{$nroDocCli}|{$hash}";
+
+        $qrSvg = QrCode::format('svg')
+            ->size(160)
+            ->margin(1)
+            ->generate($qrText);
+
+        $qrBase64 = base64_encode($qrSvg);
+
+
+        // 3) Render HTML pasando qrBase64 y qrText
+        $html = view($generateboleta, ['company' => $this->company, 'comprobante' => $this->comprobante, 'boleta' => $this->boleta, 'temporals' => $this->temporals, 'total' => $this->total, 'totalenletras' => $this->totalenletras, 'qrBase64' => $qrBase64])->render();
+
+        // Generar el PDF utilizando Dompdf
+        $pdf = Pdf::loadHTML($html);
+
+        // Opciones de configuración del PDF
+        // $pdf->setPaper('A4', 'portrait');
+        //$pdf->setPaper([0, 0, 212.625, 9999], 'portrait');
+
+
+        $pdf->setPaper('A4', 'portrait');
+
+        try {
+            $pdfContent = $pdf->output();
+
+            // NOTA: Ajusté la ruta quitando 'fe/' ya que la ruta no la incluía en el código original. 
+            // Si necesitas 'fe/', añádela de nuevo.
+            $this->boleta->pdf_path = $this->company->razonsocial . '/invoices/pdf/' . $this->voucher->getName() . '.pdf';
+
+            // Intenta subir el archivo a S3
+            Storage::disk('s3')->put($this->boleta->pdf_path, $pdfContent, 'private');
+
+            // Guardar la ruta en la base de datos SOLO si la subida fue exitosa
+            //$this->boleta->save();
+        } catch (S3Exception $e) {
+            // Manejo de errores específicos de AWS S3 (ej. 403 Forbidden, conexión)
+            // CRÍTICO: Registra o notifica el error de subida a S3
+            $errorMessage = 'Error de AWS S3 al subir el PDF: ' . $e->getMessage();
+
+            // Opcional: Lanzar la excepción para que sea manejada por Livewire/Laravel
+            // throw new Exception($errorMessage); 
+
+            // Opción recomendada: Emitir un evento de error para notificar al usuario en la vista
+            $this->emit('error', $errorMessage);
+
+            // Si la subida falló, no continuamos con el proceso.
+            return;
+        } catch (Exception $e) {
+            // Manejo de otros errores (ej. fallo al generar $pdf->output())
+            $errorMessage = 'Error inesperado al generar o subir el PDF: ' . $e->getMessage();
+            $this->emit('error', $errorMessage);
+            return;
+        }
+
+
+
+        //$this->boleta->pdf_path = 'fe/' . $this->company->razonsocial . '/invoices/pdf/' . $this->voucher->getName() . '.pdf';
+        //Storage::disk('s3')->put($this->boleta->pdf_path, $pdfContent);
+        // Guardar la ruta en la base de datos
+        $this->boleta->save();
+    }
+
+
+
+
+
+
+
     public function generatePdfReport3()
     {
         /* $params = [
@@ -929,12 +1104,86 @@ class SunatService
     }
 
 
+    public function generateGuiaDiseno($generateguia)
+    {
 
-    public function generatePdfReportGuia()
+        // RUC|TIPO|SERIE|NUM|IGV|TOTAL|FECHA|TIPODOC|NRODOC|HASH
+        $tipo = '09'; // boleta
+        $fecha = Carbon::parse($this->boleta->fechaemision)->format('Y-m-d');
+
+        //$tipoDocCli = (string) $this->comprobante->tipodocumento->codigo;
+        //$nroDocCli  = (string) $this->comprobante->customer->numdoc;
+        $hash = (string) ($this->boleta->hash ?? '');
+
+        $peso   = $this->boleta->pesototal;
+        //$total = number_format((float)$this->total, 2, '.', '');
+
+        $qrText = "{$this->company->ruc}|{$tipo}|{$this->boleta->serie}|{$this->boleta->numero}|{$peso}|{$fecha}|{$hash}";
+
+        $qrSvg = QrCode::format('svg')
+            ->size(160)
+            ->margin(1)
+            ->generate($qrText);
+
+        $qrBase64 = base64_encode($qrSvg);
+
+
+        // 3) Render HTML pasando qrBase64 y qrText
+        $html = view($generateguia, ['company' => $this->company, 'comprobante' => $this->comprobante, 'boleta' => $this->boleta, 'temporals' => $this->temporals, 'total' => $this->total, 'totalenletras' => $this->totalenletras, 'qrBase64' => $qrBase64])->render();
+
+        // Generar el PDF utilizando Dompdf
+        $pdf = Pdf::loadHTML($html);
+
+
+        $pdf->setPaper('A4', 'portrait');
+
+        try {
+            $pdfContent = $pdf->output();
+
+            // NOTA: Ajusté la ruta quitando 'fe/' ya que la ruta no la incluía en el código original. 
+            // Si necesitas 'fe/', añádela de nuevo.
+            $this->boleta->pdf_path = $this->company->razonsocial . '/invoices/pdf/' . $this->voucher->getName() . '.pdf';
+
+            // Intenta subir el archivo a S3
+            Storage::disk('s3')->put($this->boleta->pdf_path, $pdfContent, 'private');
+
+            // Guardar la ruta en la base de datos SOLO si la subida fue exitosa
+            //$this->boleta->save();
+        } catch (S3Exception $e) {
+            // Manejo de errores específicos de AWS S3 (ej. 403 Forbidden, conexión)
+            // CRÍTICO: Registra o notifica el error de subida a S3
+            $errorMessage = 'Error de AWS S3 al subir el PDF: ' . $e->getMessage();
+
+            // Opcional: Lanzar la excepción para que sea manejada por Livewire/Laravel
+            // throw new Exception($errorMessage); 
+
+            // Opción recomendada: Emitir un evento de error para notificar al usuario en la vista
+            $this->emit('error', $errorMessage);
+
+            // Si la subida falló, no continuamos con el proceso.
+            return;
+        } catch (Exception $e) {
+            // Manejo de otros errores (ej. fallo al generar $pdf->output())
+            $errorMessage = 'Error inesperado al generar o subir el PDF: ' . $e->getMessage();
+            $this->emit('error', $errorMessage);
+            return;
+        }
+
+
+
+        //$this->boleta->pdf_path = 'fe/' . $this->company->razonsocial . '/invoices/pdf/' . $this->voucher->getName() . '.pdf';
+        //Storage::disk('s3')->put($this->boleta->pdf_path, $pdfContent);
+        // Guardar la ruta en la base de datos
+        $this->boleta->save();
+    }
+
+
+
+    public function generatePdfReportGuia($guiadiseno)
     {
 
         //$html = view('admin.comprobante.sunat_template', ['voucher' => $this->voucher, 'params' => $params])->render();
-        $html = view('admin.comprobante.guiareports', ['company' => $this->company, 'boleta' => $this->boleta, 'temporals' => $this->temporals])->render();
+        $html = view($guiadiseno, ['company' => $this->company, 'boleta' => $this->boleta, 'temporals' => $this->temporals])->render();
 
 
         // Generar el PDF utilizando Dompdf
@@ -978,13 +1227,163 @@ class SunatService
         // Guardar el PDF en S3
         $pdfContent = $pdf->output();
         $this->boleta->pdf_path = 'fe/' . $this->company->razonsocial . '/invoices/pdf/' . $this->voucher->getName() . '.pdf';
-        Storage::disk('s3')->put($this->boleta->pdf_path, $pdfContent, 'public');
+        Storage::disk('s3')->put($this->boleta->pdf_path, $pdfContent, 'private');
 
         // Guardar la ruta en la base de datos
         $this->boleta->save();
     }
 
 
+
+
+    public function generatePdfFacturaNota($generatencfactura)
+    {
+
+        // RUC|TIPO|SERIE|NUM|IGV|TOTAL|FECHA|TIPODOC|NRODOC|HASH
+        $tipo = '07'; // nc FACTURA
+        $fecha = Carbon::parse($this->boleta->fechaemision)->format('Y-m-d');
+
+        $tipoDocCli = (string) $this->comprobante->tipodocumento->codigo;
+        $nroDocCli  = (string) $this->comprobante->customer->numdoc;
+        $hash = (string) ($this->boleta->hash ?? '');
+
+        $igv   = number_format((float)$this->comprobante->mtoigv, 2, '.', '');
+        $total = number_format((float)$this->total, 2, '.', '');
+
+        $qrText = "{$this->company->ruc}|{$tipo}|{$this->boleta->serie}|{$this->boleta->numero}|{$igv}|{$total}|{$fecha}|{$tipoDocCli}|{$nroDocCli}|{$hash}";
+
+        $qrSvg = QrCode::format('svg')
+            ->size(160)
+            ->margin(1)
+            ->generate($qrText);
+
+        $qrBase64 = base64_encode($qrSvg);
+
+
+        // 3) Render HTML pasando qrBase64 y qrText
+        $html = view($generatencfactura, ['company' => $this->company, 'comprobante' => $this->comprobante, 'boleta' => $this->boleta, 'temporals' => $this->temporals, 'total' => $this->total, 'totalenletras' => $this->totalenletras, 'qrBase64' => $qrBase64])->render();
+
+        // Generar el PDF utilizando Dompdf
+        $pdf = Pdf::loadHTML($html);
+
+        // Opciones de configuración del PDF
+        // $pdf->setPaper('A4', 'portrait');
+        $pdf->setPaper([0, 0, 212.625, 9999], 'portrait');
+
+        try {
+            $pdfContent = $pdf->output();
+
+            // NOTA: Ajusté la ruta quitando 'fe/' ya que la ruta no la incluía en el código original. 
+            // Si necesitas 'fe/', añádela de nuevo.
+            $this->boleta->pdf_path = $this->company->razonsocial . '/invoices/pdf/' . $this->voucher->getName() . '.pdf';
+
+            // Intenta subir el archivo a S3
+            Storage::disk('s3')->put($this->boleta->pdf_path, $pdfContent, 'private');
+
+            // Guardar la ruta en la base de datos SOLO si la subida fue exitosa
+            //$this->boleta->save();
+        } catch (S3Exception $e) {
+            // Manejo de errores específicos de AWS S3 (ej. 403 Forbidden, conexión)
+            // CRÍTICO: Registra o notifica el error de subida a S3
+            $errorMessage = 'Error de AWS S3 al subir el PDF: ' . $e->getMessage();
+
+            // Opcional: Lanzar la excepción para que sea manejada por Livewire/Laravel
+            // throw new Exception($errorMessage); 
+
+            // Opción recomendada: Emitir un evento de error para notificar al usuario en la vista
+            $this->emit('error', $errorMessage);
+
+            // Si la subida falló, no continuamos con el proceso.
+            return;
+        } catch (Exception $e) {
+            // Manejo de otros errores (ej. fallo al generar $pdf->output())
+            $errorMessage = 'Error inesperado al generar o subir el PDF: ' . $e->getMessage();
+            $this->emit('error', $errorMessage);
+            return;
+        }
+
+
+
+        //$this->boleta->pdf_path = 'fe/' . $this->company->razonsocial . '/invoices/pdf/' . $this->voucher->getName() . '.pdf';
+        //Storage::disk('s3')->put($this->boleta->pdf_path, $pdfContent);
+        // Guardar la ruta en la base de datos
+        $this->boleta->save();
+    }
+
+
+    public function generatePdfBoletaNota($generatencboleta)
+    {
+
+        // RUC|TIPO|SERIE|NUM|IGV|TOTAL|FECHA|TIPODOC|NRODOC|HASH
+        $tipo = '07'; // nc BOLETA
+        $fecha = Carbon::parse($this->boleta->fechaemision)->format('Y-m-d');
+
+        $tipoDocCli = (string) $this->comprobante->tipodocumento->codigo;
+        $nroDocCli  = (string) $this->comprobante->customer->numdoc;
+        $hash = (string) ($this->boleta->hash ?? '');
+
+        $igv   = number_format((float)$this->comprobante->mtoigv, 2, '.', '');
+        $total = number_format((float)$this->total, 2, '.', '');
+
+        $qrText = "{$this->company->ruc}|{$tipo}|{$this->boleta->serie}|{$this->boleta->numero}|{$igv}|{$total}|{$fecha}|{$tipoDocCli}|{$nroDocCli}|{$hash}";
+
+        $qrSvg = QrCode::format('svg')
+            ->size(160)
+            ->margin(1)
+            ->generate($qrText);
+
+        $qrBase64 = base64_encode($qrSvg);
+
+
+        // 3) Render HTML pasando qrBase64 y qrText
+        $html = view($generatencboleta, ['company' => $this->company, 'comprobante' => $this->comprobante, 'boleta' => $this->boleta, 'temporals' => $this->temporals, 'total' => $this->total, 'totalenletras' => $this->totalenletras, 'qrBase64' => $qrBase64])->render();
+
+        // Generar el PDF utilizando Dompdf
+        $pdf = Pdf::loadHTML($html);
+
+        // Opciones de configuración del PDF
+        // $pdf->setPaper('A4', 'portrait');
+        $pdf->setPaper([0, 0, 212.625, 9999], 'portrait');
+
+        try {
+            $pdfContent = $pdf->output();
+
+            // NOTA: Ajusté la ruta quitando 'fe/' ya que la ruta no la incluía en el código original. 
+            // Si necesitas 'fe/', añádela de nuevo.
+            $this->boleta->pdf_path = $this->company->razonsocial . '/invoices/pdf/' . $this->voucher->getName() . '.pdf';
+
+            // Intenta subir el archivo a S3
+            Storage::disk('s3')->put($this->boleta->pdf_path, $pdfContent, 'private');
+
+            // Guardar la ruta en la base de datos SOLO si la subida fue exitosa
+            //$this->boleta->save();
+        } catch (S3Exception $e) {
+            // Manejo de errores específicos de AWS S3 (ej. 403 Forbidden, conexión)
+            // CRÍTICO: Registra o notifica el error de subida a S3
+            $errorMessage = 'Error de AWS S3 al subir el PDF: ' . $e->getMessage();
+
+            // Opcional: Lanzar la excepción para que sea manejada por Livewire/Laravel
+            // throw new Exception($errorMessage); 
+
+            // Opción recomendada: Emitir un evento de error para notificar al usuario en la vista
+            $this->emit('error', $errorMessage);
+
+            // Si la subida falló, no continuamos con el proceso.
+            return;
+        } catch (Exception $e) {
+            // Manejo de otros errores (ej. fallo al generar $pdf->output())
+            $errorMessage = 'Error inesperado al generar o subir el PDF: ' . $e->getMessage();
+            $this->emit('error', $errorMessage);
+            return;
+        }
+
+
+
+        //$this->boleta->pdf_path = 'fe/' . $this->company->razonsocial . '/invoices/pdf/' . $this->voucher->getName() . '.pdf';
+        //Storage::disk('s3')->put($this->boleta->pdf_path, $pdfContent);
+        // Guardar la ruta en la base de datos
+        $this->boleta->save();
+    }
 
 
 

@@ -54,6 +54,7 @@ return new class extends Migration
             $table->text('cdr_code')->nullable();
             $table->text('cdr_notes')->nullable();
             $table->text('cdr_description')->nullable();
+            $table->string('qr_text')->nullable();
 
             //para controlar las boletas enviadas por resumen
             $table->unsignedBigInteger('resumen_id')->nullable();

@@ -131,6 +131,7 @@ class ComprobanteList extends Component
                 ->join('customers', 'customers.id', '=', 'comprobantes.customer_id')
                 ->select(
                     'comprobantes.id',
+                    'comprobantes.fechaemision',
                     'comprobantes.serienumero',
                     'comprobantes.valorventa',
                     'comprobantes.totalimpuestos',

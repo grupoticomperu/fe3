@@ -63,6 +63,9 @@ use App\Http\Controllers\Admin\GuiaPdfController;
 use App\Http\Controllers\admin\ProductfamilieController;
 use App\Http\Controllers\admin\ProductatributeController;
 use App\Http\Controllers\admin\UsersPermissionsController;
+use App\Http\Livewire\Admin\BoletadisenoCreate;
+use App\Http\Livewire\Admin\BoletadisenoEdit;
+use App\Http\Livewire\Admin\BoletadisenoList;
 use App\Http\Livewire\Admin\ConductorCreate;
 use App\Http\Livewire\Admin\ConductorEdit;
 use App\Http\Livewire\Admin\ConductorList;
@@ -78,7 +81,7 @@ use App\Http\Livewire\Admin\TransportistaList;
 use App\Http\Livewire\Admin\VehiculoCreate;
 use App\Http\Livewire\Admin\VehiculoEdit;
 use App\Http\Livewire\Admin\VehiculoList;
-
+use App\Models\Boletadiseno;
 
 // Nueva ruta segura para descargar cualquier comprobante (PDF, XML, CDR)
 Route::get('comprobantes/{comprobante}/download/{type}', [FileController::class, 'downloadFile'])
@@ -188,6 +191,11 @@ Route::get('vehiculos/{vehiculo}/edit', VehiculoEdit::class)->name('vehiculo.edi
 Route::get('puntodepartida', PuntodepartidaList::class)->name('puntodepartida.list');
 Route::get('puntodepartida/create', PuntodepartidaCreate::class)->name('puntodepartida.create');
 Route::get('puntodepartidas/{puntodepartida}/edit',PuntodepartidaEdit::class)->name('puntodepartida.edit');
+
+
+Route::get('boletadiseno', BoletadisenoList::class)->name('admin.boletadiseno.list');
+Route::get('boletadiseno/create', BoletadisenoCreate::class)->name('admin.boletadiseno.create');
+Route::get('boletadiseno/{boletadiseno}/edit',BoletadisenoEdit::class)->name('admin.boletadiseno.edit');
 
 //Route::get('products', ProductList::class)->name('product.list');
 Route::get('productcompuesto/{product}', ProductcompuestoCreate::class)->name('productcompuesto.create');//creamos el producto productatribute

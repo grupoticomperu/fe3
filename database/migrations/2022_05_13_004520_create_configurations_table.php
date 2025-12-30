@@ -26,18 +26,19 @@ return new class extends Migration
             $table->timestamp('fechainicio')->nullable();
             $table->timestamp('fechafin')->nullable();
             $table->boolean('incluirigv')->default(true);
-            $table->boolean('withcategory')->default(true);//1 true es con categoria y subcategoria,  0 sin categoria
+            $table->boolean('withcategory')->default(true); //1 true es con categoria y subcategoria,  0 sin categoria
             $table->text('nota1')->nullable();
             $table->text('nota2')->nullable();
             $table->text('nota3')->nullable();
             $table->double('igv')->default(18);
 
-            $table->integer('numdecimalesproducto')->nullable();//se agrego
-            $table->integer('numdecimalescomprobante')->nullable();//se agrego
+            $table->integer('numdecimalesproducto')->nullable(); //se agrego
+            $table->integer('numdecimalescomprobante')->nullable(); //se agrego
 
             $table->unsignedBigInteger('company_id')->nullable();
             $table->foreign('company_id')->references('id')->on('companies')->onDelete('cascade');
 
+           
 
 
             $table->timestamps();

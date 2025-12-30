@@ -804,7 +804,6 @@ class ComprobanteCreate extends Component
     } */
 
 
-
     //guardamos el comprobante
     public function save()
     {
@@ -1058,30 +1057,6 @@ class ComprobanteCreate extends Component
         //$this->getLegends();
 
 
-
-        //guadamos la tabla comprobante_product
-
-        /* $temporals = Temporal::where('company_id', auth()->user()->employee->company->id)
-            ->where('employee_id', auth()->user()->employee->id)
-            ->get();
-
-        $comprobanteProductData = $temporals->map(function ($temporal) use ($comprobante) {
-            return [
-                'cant' => $temporal->quantity,
-                'price' => $temporal->saleprice,
-                'subtotal' => $temporal->subtotal,
-                'product_id' => $temporal->product_id,
-                'comprobante_id' => $comprobante->id,
-            ];
-        });
-
-        Comprobante_Product::insert($comprobanteProductData->toArray());
-        $temporals->each->delete(); */
-        //facturacion electronica
-        //$boleta tiene el ultimo registro creado de factura o boleta
-        //$temporals tiene lo seleccionado en el carrito pero con state=0
-        //$comprobante  es el ultimo comprobante creado
-        //$this->company la compania logueada
         $sunat = new SunatService($comprobante, $this->company, $temporals, $boleta, $this->total, $this->totalenletras);
 
         $sunat->getSee();
@@ -1121,11 +1096,33 @@ class ComprobanteCreate extends Component
                 break;
         }
 
-        //$sunat->generatePdfReport();
-        //$sunat->generatePdfReport3();
-        //$sunat->generatePdfReport2($this->serienumero);
+
         // Generar el PDF y guardarlo en S3
-        $sunat->generatePdfReport3();
+        //$sunat->generatePdfReport3();
+
+
+        switch ($this->tipocomprobante_id) {
+            case '1':
+                $sunat->generateFacturaDiseno($this->company->facturadiseno->nameblade);
+                break;
+
+            case '2':
+                $sunat->generateBoletaDiseno($this->company->boletadiseno->nameblade);
+              
+                break;
+
+            default:
+
+                break;
+        }
+
+
+
+
+
+
+
+
         $boleta->refresh();
 
         // Seguridad: verificar que exista pdf_path

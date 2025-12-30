@@ -24,6 +24,12 @@ class UserSeeder extends Seeder
     public function run()
     {
 
+        $this->call(BoletadisenosTableSeeder::class);
+        $this->call(FacturadisenosTableSeeder::class);
+        $this->call(GuiadisenosTableSeeder::class);
+        $this->call(NcboletadisenosTableSeeder::class);
+        $this->call(NcfacturadisenosTableSeeder::class);
+
         //creamos la company
         $company = Company::create([
             'ruc' => '20447393302',
@@ -35,6 +41,11 @@ class UserSeeder extends Seeder
             'solpass' => "MODDATOS",
             'ublversion' => "2.1",
             'detraccion' => 700,
+            'ncboletadiseno_id' => 1,
+            'ncfacturadiseno_id' => 1,
+            'guiadiseno_id' => 1,
+            'facturadiseno_id' => 1,
+            'boletadiseno_id' => 1,
             'certificate_path' => 'fe/certificados/dy2eLjhjZJvYb9P2XOM86KTqC8sfpoQIE9vmw4zb.txt',
             //'logo' => 'fe/logos/0jdmPxuXhJXZ4IFjjN11goSZYMg26HkpQ8zg2GOS.png',
             'logo' => '',
@@ -305,6 +316,28 @@ Q03NoAh6oA46zA1LzaF+lpcIPbqNAdb4B4gJ0os+mCgwXx8DkEMSSZvWUMI=
         Permission::create(['name' => 'Guia Create', 'display_name' => 'Crear Guia'])->SyncRoles([$adminRole]);
         Permission::create(['name' => 'Guia Update', 'display_name' => 'Actualizar Guia'])->SyncRoles([$adminRole]);
         Permission::create(['name' => 'Guia Delete', 'display_name' => 'Eliminar Guia'])->SyncRoles([$adminRole]);
+
+
+        Permission::create(['name' => 'Boletadiseno View', 'display_name' => 'Ver Boletadiseno'])->SyncRoles([$adminRole]);
+        Permission::create(['name' => 'Boletadiseno Create', 'display_name' => 'Crear Boletadiseno'])->SyncRoles([$adminRole]);
+        Permission::create(['name' => 'Boletadiseno Update', 'display_name' => 'Actualizar Boletadiseno'])->SyncRoles([$adminRole]);
+        Permission::create(['name' => 'Boletadiseno Delete', 'display_name' => 'Eliminar Boletadiseno'])->SyncRoles([$adminRole]);
+
+        Permission::create(['name' => 'Facturadiseno View', 'display_name' => 'Ver Facturadiseno'])->SyncRoles([$adminRole]);
+        Permission::create(['name' => 'Facturadiseno Create', 'display_name' => 'Crear Facturadiseno'])->SyncRoles([$adminRole]);
+        Permission::create(['name' => 'Facturadiseno Update', 'display_name' => 'Actualizar Facturadiseno'])->SyncRoles([$adminRole]);
+        Permission::create(['name' => 'Facturadiseno Delete', 'display_name' => 'Eliminar Facturadiseno'])->SyncRoles([$adminRole]);
+
+        Permission::create(['name' => 'Guiadiseno View', 'display_name' => 'Ver Guiadiseno'])->SyncRoles([$adminRole]);
+        Permission::create(['name' => 'Guiadiseno Create', 'display_name' => 'Crear Guiadiseno'])->SyncRoles([$adminRole]);
+        Permission::create(['name' => 'Guiadiseno Update', 'display_name' => 'Actualizar Guiadiseno'])->SyncRoles([$adminRole]);
+        Permission::create(['name' => 'Guiadiseno Delete', 'display_name' => 'Eliminar Guiadiseno'])->SyncRoles([$adminRole]);
+
+        Permission::create(['name' => 'Ncboletadiseno View', 'display_name' => 'Ver Ncboletadiseno'])->SyncRoles([$adminRole]);
+        Permission::create(['name' => 'Ncboletadiseno Create', 'display_name' => 'Crear Ncboletadiseno'])->SyncRoles([$adminRole]);
+        Permission::create(['name' => 'Ncboletadiseno Update', 'display_name' => 'Actualizar Ncboletadiseno'])->SyncRoles([$adminRole]);
+        Permission::create(['name' => 'Ncboletadiseno Delete', 'display_name' => 'Eliminar Ncboletadiseno'])->SyncRoles([$adminRole]);
+
 
         //creando empresa de muestra
 

@@ -226,8 +226,7 @@
                                     </td>
                                     <td class="items-center px-6 py-4 text-sm text-gray-500 whitespace-nowrap">
 
-                                        {{--  {{ $comprobante->fechaemision }} --}}
-                                        {{ \Carbon\Carbon::parse($comprobante->fechaemision)->format('d/m/Y') }}
+                                     {{ $comprobante->fechaemision->format('d/m/Y') }}
 
                                     </td>
                                     <td class="items-center px-6 py-4 text-sm text-gray-500 whitespace-nowrap">
@@ -312,12 +311,21 @@
                                         {{-- para mostrar boleta es 2 --}}
                                         @if ($comprobante->tipocomprobante_id == 2)
                                             @if ($comprobante->boleta->pdf_path)
+                                                {{-- AHORA USAMOS LA RUTA PROXY DE LARAVEL --}}
+                                                <a href="{{ route('admin.comprobante.download', ['comprobante' => $comprobante->id, 'type' => 'pdf']) }}"
+                                                    target="_blank">
+
+                                                    <img class='h-6' src="/images/icons/pdf_cpe.svg"
+                                                        alt="comprobante PDF">
+                                                </a>
+
                                                 {{-- <a href="{{ asset('storage/' . $comprobante->boleta->pdf_path) }}" funciona en local --}}
-                                                <a href="{{ Storage::disk('s3')->url($comprobante->boleta->pdf_path) }}"
+                                                {{-- funcionaba en s3 --}}
+                                                {{-- <a href="{{ Storage::disk('s3')->url($comprobante->boleta->pdf_path) }}"
                                                     target="_blank">
                                                     <img class='h-6' src="/images/icons/pdf_cpe.svg"
                                                         alt="comprobante">
-                                                </a>
+                                                </a> --}}
                                             @endif
                                         @endif
 
@@ -325,10 +333,16 @@
                                         @if ($comprobante->tipocomprobante_id == 3)
                                             @if ($comprobante->ncfactura->pdf_path)
                                                 {{--  <a href="{{ asset('storage/' . $comprobante->ncfactura->pdf_path) }}" --}}
-                                                <a href="{{ Storage::disk('s3')->url($comprobante->ncfactura->pdf_path) }}"
+                                                {{-- <a href="{{ Storage::disk('s3')->url($comprobante->ncfactura->pdf_path) }}"
                                                     target="_blank">
                                                     <img class='h-6' src="/images/icons/pdf_cpe.svg"
                                                         alt="comprobante">
+                                                </a> --}}
+                                                <a href="{{ route('admin.comprobante.download', ['comprobante' => $comprobante->id, 'type' => 'pdf']) }}"
+                                                    target="_blank">
+
+                                                    <img class='h-6' src="/images/icons/pdf_cpe.svg"
+                                                        alt="comprobante PDF">
                                                 </a>
                                             @endif
                                         @endif
@@ -336,10 +350,16 @@
                                         {{-- para mostrar nc boleta es 5 --}}
                                         @if ($comprobante->tipocomprobante_id == 5)
                                             @if ($comprobante->ncboleta->pdf_path)
-                                                <a href="{{ Storage::disk('s3')->url($comprobante->ncboleta->pdf_path) }}"
-                                                    {{-- <a href="{{ asset('storage/' . $comprobante->ncboleta->pdf_path) }}" --}} target="_blank">
+                                                {{-- <a href="{{ Storage::disk('s3')->url($comprobante->ncboleta->pdf_path) }}" target="_blank">
                                                     <img class='h-6' src="/images/icons/pdf_cpe.svg"
                                                         alt="comprobante">
+                                                </a> --}}
+
+                                                <a href="{{ route('admin.comprobante.download', ['comprobante' => $comprobante->id, 'type' => 'pdf']) }}"
+                                                    target="_blank">
+
+                                                    <img class='h-6' src="/images/icons/pdf_cpe.svg"
+                                                        alt="comprobante PDF">
                                                 </a>
                                             @endif
                                         @endif
@@ -349,11 +369,17 @@
 
                                         @if ($comprobante->tipocomprobante_id == 7)
                                             @if (optional($comprobante->guia)->pdf_path)
-                                                <a href="{{ Storage::disk('s3')->url($comprobante->guia->pdf_path) }}"
+                                                <a href="{{ route('admin.comprobante.download', ['comprobante' => $comprobante->id, 'type' => 'pdf']) }}"
+                                                    target="_blank">
+
+                                                    <img class='h-6' src="/images/icons/pdf_cpe.svg"
+                                                        alt="comprobante PDF">
+                                                </a>
+                                                {{--  <a href="{{ Storage::disk('s3')->url($comprobante->guia->pdf_path) }}"
                                                     target="_blank">
                                                     <img class='h-6' src="/images/icons/pdf_cpe.svg"
                                                         alt="comprobante">
-                                                </a>
+                                                </a> --}}
                                             @endif
                                         @endif
 
@@ -796,7 +822,7 @@
 
 
     @push('scripts')
-          <script>
+        <script>
             window.addEventListener('open-whatsapp', event => {
                 const url = event.detail.url;
                 window.open(url, '_blank'); // abre WhatsApp Web / app

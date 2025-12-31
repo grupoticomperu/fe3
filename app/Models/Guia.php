@@ -62,4 +62,21 @@ class Guia extends Model
     {
         return $this->belongsTo(Comprobante::class);
     }
+
+
+    public function department()
+    {
+        return $this->belongsTo(Department::class);
+    }
+
+    public function province()
+    {
+        return $this->belongsTo(Province::class);
+    }
+
+
+    public function district()
+    {
+        return $this->belongsTo(District::class);
+    }
 }

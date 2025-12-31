@@ -361,21 +361,77 @@
     {{-- TOTALES --}}
     <div class="totals">
         <table>
-            <tr>
-                <td class="key">Placa de Vehículo</td>
-                <td class="val">{{ optional($boleta?->vehiculos->first())->numeroplaca }}</td>
-            </tr>
-            <tr>
-                <td class="key">DNI del conductor</td>
-                <td class="val">{{ optional($boleta?->conductors->first())->numdoc }}</td>
-            </tr>
+
             <tr>
                 <td class="key">Modalidad de Transporte</td> {{-- 01 publico 02 privado --}}
-                <td class="val">  {{ $boleta?->modalidaddetraslado === '01' ? 'Público' : 'Privado' }} </td>
+                <td class="val"> {{ $boleta?->modalidaddetraslado === '01' ? 'Público' : 'Privado' }} </td>
             </tr>
+
+            {{-- si es publico mostrar transportista --}}
+            @if ($boleta->modalidaddetraslado === '01')
+                <tr>
+                    <td class="key grand-total">Transportista:</td>
+                    <td class="val grand-total">{{ $boleta->transportista->nomrazonsocial }}</td>
+                </tr>
+
+                <tr>
+                    <td class="key grand-total">Num Documento:</td>
+                    <td class="val grand-total">{{ $boleta->transportista->numdoc }}</td>
+                </tr>
+                <tr>
+                    <td class="key grand-total">Nro. MTC:</td>
+                    <td class="val grand-total">{{ $boleta->transportista->nromtc }}</td>
+                </tr>
+            @endif
+
+
+            {{-- si es publico mostrar transportista --}}
+            @if ($boleta->modalidaddetraslado === '02')
+                <tr>
+                    <td class="key">Placa de Vehículo</td>
+                    <td class="val">{{ optional($boleta?->vehiculos->first())->numeroplaca }}</td>
+                </tr>
+               {{--  <tr>
+                    <td class="key">DNI del conductor</td>
+                    <td class="val">{{ optional($boleta?->conductors->first())->numdoc }}</td>
+                </tr>
+ --}}
+                <tr>
+                    <td class="key grand-total">Conductor:</td>
+                    <td class="val grand-total">{{ $boleta->conductors->first()->nomape ?? 'Sin conductor' }}</td>
+                </tr>
+
+                <tr>
+                    <td class="key grand-total">Num Documento:</td>
+                    <td class="val grand-total">{{ $boleta->conductors->first()->numdoc ?? 'Sin conductor' }}</td>
+                </tr>
+                <tr>
+                    <td class="key grand-total">Licencia:</td>
+                    <td class="val grand-total">{{ $boleta->conductors->first()->licencia ?? 'Sin conductor' }}</td>
+                </tr>
+                <tr>
+                    <td class="key grand-total">Vehiculo Modelo y Marca:</td>
+                    <td class="val grand-total"> {{ $boleta->vehiculos->first()->modelo ?? 'Sin vehículo' }}
+                        {{ $boleta->vehiculos->first()->marca ?? 'Sin marca' }}</td>
+                </tr>
+
+                <tr>
+                    <td class="key grand-total">Placa Vehiculo:</td>
+                    <td class="val grand-total"> {{ $boleta->vehiculos->first()->numeroplaca ?? 'Sin vehículo' }} </td>
+                </tr>
+                <tr>
+                    <td class="key grand-total">Tuce:</td>
+                    <td class="val grand-total"> {{ $boleta->vehiculos->first()->tuce ?? 'Sin vehículo' }} </td>
+                </tr>
+            @endif
+
+
+
+
+
             <tr>
                 <td class="key grand-total">Peso Total</td>
-                <td class="val grand-total">{{ $boleta->pesototal }}</td>
+                <td class="val grand-total">{{ $boleta->pesototal }} {{ $boleta->um->abbreviation }}</td>
             </tr>
 
             <tr>
@@ -385,12 +441,19 @@
 
             <tr>
                 <td class="key grand-total">Punto de Partida</td>
-                <td class="val grand-total">{{ $boleta->puntodepartida->direccion }}</td>
+                <td class="val grand-total">{{ $boleta->puntodepartida->direccion }}
+                    {{ $boleta->puntodepartida->department->name }}
+                    {{ $boleta->puntodepartida->province->name }} {{ $boleta->puntodepartida->district->name }}
+                </td>
             </tr>
+
 
             <tr>
                 <td class="key grand-total">Punto de llegada</td>
-                <td class="val grand-total">{{ $boleta->direccionllegada }}</td>
+                <td class="val grand-total">{{ $boleta->direccionllegada }} {{ $boleta->department->name }}
+                    {{ $boleta->province->name }} {{ $boleta->district->name }}
+
+                </td>
             </tr>
 
             <tr>

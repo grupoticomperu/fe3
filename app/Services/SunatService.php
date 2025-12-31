@@ -1134,9 +1134,12 @@ class SunatService
         // Generar el PDF utilizando Dompdf
         $pdf = Pdf::loadHTML($html);
 
-
-        $pdf->setPaper('A4', 'portrait');
-
+        if($this->company->guiadiseno->description == 'ticket'){
+            $pdf->setPaper([0, 0, 212.625, 9999], 'portrait');
+        }else{
+            $pdf->setPaper('A4', 'portrait');
+        }
+        
         try {
             $pdfContent = $pdf->output();
 

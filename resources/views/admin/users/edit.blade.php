@@ -188,7 +188,7 @@
 
 
 
-                            <div class="py-4">
+                           {{--  <div class="py-4">
                                 <input type="file" name="photo" id="file" accept="image/*">
                             </div>
                             <div class="w-full py-4 mt-2 bg-slate-50">
@@ -199,7 +199,7 @@
                                     <img class="w-20 mb-2 ml-4" src="{{ asset($user->employee->photo) }}"
                                         alt="usuario">
                                 @endif
-                            </div>
+                            </div> --}}
 
                             <x-jet-danger-button class="w-full mt-4 mb-3" type="submit">
                                 <i class="mx-2 fa-regular fa-floppy-disk"></i> Actualizar datos del Usuario

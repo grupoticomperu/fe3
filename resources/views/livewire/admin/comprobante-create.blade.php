@@ -231,43 +231,6 @@
 
 
 
-    {{-- <div class="grid px-4 mx-auto mt-4 max-w-7xl sm:px-6 lg:px-8">
-        <div class="px-3 bg-white">
-            <div class="card card-primary card-outline">
-                <div class="card-body box-profile">
-                    <div>
-                        <div class="grid grid-cols-1 gap-4 mt-4 sm:grid-cols-2">
-                            <input type="text" id="code" class="block w-1/2 h-10 py-2 m-1 mr-2 bg-gray-100"
-                                wire:keydown.enter.prevent="ScanCode($('#code').val())"
-                                placeholder="Código de barras" />
-                            <form class="relative w-1/2 mx-auto mr-2 text-gray-600" autocomplete="off">
-                                <input wire:model="searchh" class="block w-full h-10 py-2 m-1 bg-gray-100"
-                                    type="text" name="searchh" placeholder="Buscar">
-                                @if ($searchh)
-                                    <ul class="absolute left-0 w-full mt-1 overflow-hidden bg-white rounded-lg z-500 ">
-                                        @forelse ($this->results as $result)
-                                            <li class="px-5 text-sm leading-10 cursor-pointer hover:bg-gray-300">
-                                                <a href="#"
-                                                    wire:click.prevent="ScanCoded('{{ $result->id }}')">{{ $result->name }}
-                                                </a>
-                                            </li>
-                                        @empty
-                                            <li class="px-5 text-sm leading-10 cursor-pointer hover:bg-gray-300">
-                                                No hay coincidencias
-                                            </li>
-                                        @endforelse
-                                    </ul>
-                                @endif
-                            </form>
-                            <a class="mb-4 btn btn-red" wire:click="$emit('limpiarTemporal')">
-                                <i class="fa-solid fa-trash-can"></i>
-                            </a>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div> --}}
 
 
 

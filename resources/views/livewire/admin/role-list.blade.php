@@ -193,7 +193,7 @@
 
 
                                         <td class="px-6 py-4 text-sm font-medium text-right whitespace-nowrap">
-                                            <a class="btn btn-blue"><i class="fa-sharp fa-solid fa-eye"></i></a>
+                                            {{-- <a class="btn btn-blue"><i class="fa-sharp fa-solid fa-eye"></i></a> --}}
                                             {{--  @can('update User') --}}
                                             <a href="{{ route('admin.role.edit', $role)}}" class="btn btn-green"><i
                                                     class="fa-solid fa-pen-to-square"></i></a>

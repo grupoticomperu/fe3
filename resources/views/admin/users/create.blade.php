@@ -119,9 +119,9 @@
                                         </div>
 
 
-                                        <div class="py-4">
+                                       {{--  <div class="py-4">
                                             <input type="file" name="photo" id="file" accept="image/*">
-                                        </div>
+                                        </div> --}}
 
                                        {{--  <x-jet-danger-button class="w-full mt-4 mb-3" type="submit">
                                             <i class="mx-2 fa-regular fa-floppy-disk"></i> Crear Usuario

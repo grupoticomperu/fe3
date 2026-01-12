@@ -149,23 +149,22 @@ Route::middleware([
 
 Route::group(['middleware' => ['auth:sanctum', 'verified'], 'prefix' => 'admin'], function () {
 
-    Route::get('/', function () {
+    /* Route::get('/', function () {
         return view('admin.index');
-    })->name('admin.index');
+    })->name('admin.index'); */
 
 
 
-    Route::get('/categories', CategoryList::class)->name('category.list');
-
-    Route::get('/brands', function () {
+    //Route::get('/categories', CategoryList::class)->name('category.list');
+    //estamos comentando brands porque no lo usamos
+    /* Route::get('/brands', function () {
         return view('admin.brands');
-    })->name('admin.brands');
-    /* de esta forma no es necesario poner el slot y los divs */
-
-    Route::get('/comprobantes', ComprobanteList::class)->name('comprobante.list');
-    Route::get('save-comprobantes', ComprobanteSave::class)->name('comprobante.create');
-    // Route::get('/sales', SaleCreate::class)->name('sale.create');
-
+    })->name('admin.brands'); */
+   
+    //esta ruta lo puse tal cual en la ruta admin.php
+   // Route::get('/comprobantes', ComprobanteList::class)->name('comprobante.list');
+   // Route::get('save-comprobantes', ComprobanteSave::class)->name('comprobante.create');
+   
 });
 
 

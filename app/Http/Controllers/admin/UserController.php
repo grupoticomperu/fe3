@@ -61,7 +61,7 @@ class UserController extends Controller
 
         if ($request->hasFile('photo')) {
             //$nombreimagen = Storage::disk('s3')->put('parallaxs', $request->file('photo'), 'public');
-            $urlimage = Storage::disk('s3')->put('fe/' . $company->razonsocial . '/users', $request->file('photo'), 'public');
+            $urlimage = Storage::disk('s3_public')->put('fe/' . $company->razonsocial . '/users', $request->file('photo'), 'public');
         } else {
             $urlimage = 'fe/default/users/userdefault.jpg';
         }
@@ -104,7 +104,7 @@ class UserController extends Controller
     public function edit(User $user)
     {
         $companyId = auth()->user()->employee->company->id;
-        //$this->authorize('update', $user);
+        $this->authorize('update', $user);
         //$roles = Role::pluck('name', 'id');//mandara un array asociativo con clave
         $roles = Role::with('permissions')->get();
         //valor y no un array de objetos
@@ -118,6 +118,7 @@ class UserController extends Controller
     public function update(UpdateUserRequest $request, User $user)
     {
 
+        $this->authorize('update', $user);
         $request->validated();
 
 

@@ -30,10 +30,10 @@ class ProductSeeder extends Seeder
             'currency_id' => 1,
             'um_id' => 1,
             'modelo_id' => 1,
-            'category_id' => 1,
+            'category_id' => 2,
             'tipoafectacion_id' => 1,
             'brand_id' => 1,
-            'esbolsa' => 0,
+            //'esbolsa' => 0,
             'state' => 1,
         ]);
 
@@ -51,10 +51,10 @@ class ProductSeeder extends Seeder
             'currency_id' => 1,
             'um_id' => 1,
             'modelo_id' => 1,
-            'category_id' => 1,
+            'category_id' => 2,
             'tipoafectacion_id' => 1,
             'brand_id' => 1,
-            'esbolsa' => 0,
+            //'esbolsa' => 0,
             'state' => 1,
         ]);
 
@@ -72,10 +72,10 @@ class ProductSeeder extends Seeder
             'currency_id' => 1,
             'um_id' => 1,
             'modelo_id' => 1,
-            'category_id' => 1,
+            'category_id' => 3,
             'tipoafectacion_id' => 1,
             'brand_id' => 1,
-            'esbolsa' => 0,
+            //'esbolsa' => 0,
             'state' => 1,
         ]);
 
@@ -93,10 +93,10 @@ class ProductSeeder extends Seeder
             'currency_id' => 1,
             'um_id' => 1,
             'modelo_id' => 1,
-            'category_id' => 1,
+            'category_id' => 4,
             'tipoafectacion_id' => 1,
             'brand_id' => 1,
-            'esbolsa' => 0,
+            //'esbolsa' => 0,
             'state' => 1,
         ]);
 
@@ -114,10 +114,10 @@ class ProductSeeder extends Seeder
             'currency_id' => 1,
             'um_id' => 1,
             'modelo_id' => 1,
-            'category_id' => 1,
+            'category_id' => 4,
             'tipoafectacion_id' => 1,
             'brand_id' => 1,
-            'esbolsa' => 0,
+            //'esbolsa' => 0,
             'state' => 1,
         ]);
 
@@ -136,10 +136,10 @@ class ProductSeeder extends Seeder
             'currency_id' => 1,
             'um_id' => 1,
             'modelo_id' => 1,
-            'category_id' => 1,
+            'category_id' => 2,
             'tipoafectacion_id' => 1,
             'brand_id' => 1,
-            'esbolsa' => 0,
+            //'esbolsa' => 0,
             'state' => 1,
         ]);
 
@@ -156,10 +156,10 @@ class ProductSeeder extends Seeder
             'currency_id' => 1,
             'um_id' => 1,
             'modelo_id' => 1,
-            'category_id' => 1,
+            'category_id' => 2,
             'tipoafectacion_id' => 1,
             'brand_id' => 1,
-            'esbolsa' => 0,
+            //'esbolsa' => 0,
             'state' => 1,
         ]);
 
@@ -176,10 +176,10 @@ class ProductSeeder extends Seeder
             'currency_id' => 1,
             'um_id' => 1,
             'modelo_id' => 1,
-            'category_id' => 1,
+            'category_id' => 2,
             'tipoafectacion_id' => 1,
             'brand_id' => 1,
-            'esbolsa' => 0,
+            //'esbolsa' => 0,
             'state' => 1,
         ]);
 
@@ -197,10 +197,10 @@ class ProductSeeder extends Seeder
             'currency_id' => 1,
             'um_id' => 1,
             'modelo_id' => 1,
-            'category_id' => 1,
+            'category_id' => 2,
             'tipoafectacion_id' => 1,
             'brand_id' => 1,
-            'esbolsa' => 0,
+            //'esbolsa' => 0,
             'state' => 1,
         ]);
 
@@ -216,14 +216,14 @@ class ProductSeeder extends Seeder
             'saleprice' => 1180,
             'mtovalorunitario' => 1000, //precio sin igv
             'salepricemin' => 1080,
-            'company_id' => 2,
+            'company_id' => 1,
             'currency_id' => 1,
             'um_id' => 1,
             'modelo_id' => 1,
-            'category_id' => 1,
+            'category_id' => 2,
             'tipoafectacion_id' => 1,
             'brand_id' => 1,
-            'esbolsa' => 0,
+            //'esbolsa' => 0,
             'state' => 1,
         ]);
 
@@ -236,14 +236,14 @@ class ProductSeeder extends Seeder
             'saleprice' => 177,
             'mtovalorunitario' => 150, //precio sin igv
             'salepricemin' => 170,
-            'company_id' => 2,
+            'company_id' => 1,
             'currency_id' => 1,
             'um_id' => 1,
             'modelo_id' => 1,
-            'category_id' => 1,
+            'category_id' => 2,
             'tipoafectacion_id' => 1,
             'brand_id' => 1,
-            'esbolsa' => 0,
+            //'esbolsa' => 0,
             'state' => 1,
         ]);
 
@@ -256,14 +256,14 @@ class ProductSeeder extends Seeder
             'saleprice' => 354,
             'mtovalorunitario' => 300, //precio sin igv
             'salepricemin' => 320,
-            'company_id' => 2,
+            'company_id' => 1,
             'currency_id' => 1,
             'um_id' => 1,
             'modelo_id' => 1,
-            'category_id' => 1,
+            'category_id' => 2,
             'tipoafectacion_id' => 1,
             'brand_id' => 1,
-            'esbolsa' => 0,
+            //'esbolsa' => 0,
             'state' => 1,
         ]);
 
@@ -276,14 +276,14 @@ class ProductSeeder extends Seeder
             'saleprice' => 35.4,
             'mtovalorunitario' => 30, //precio sin igv
             'salepricemin' => 33,
-            'company_id' => 2,
+            'company_id' => 1,
             'currency_id' => 1,
             'um_id' => 1,
             'modelo_id' => 1,
-            'category_id' => 1,
+            'category_id' => 2,
             'tipoafectacion_id' => 1,
             'brand_id' => 1,
-            'esbolsa' => 0,
+            //'esbolsa' => 0,
             'state' => 1,
         ]);
 
@@ -297,14 +297,14 @@ class ProductSeeder extends Seeder
             'saleprice' => 23.60,
             'mtovalorunitario' => 20, //precio sin igv
             'salepricemin' => 23,
-            'company_id' => 2,
+            'company_id' => 1,
             'currency_id' => 1,
             'um_id' => 1,
             'modelo_id' => 1,
-            'category_id' => 1,
+            'category_id' => 2,
             'tipoafectacion_id' => 1,
             'brand_id' => 1,
-            'esbolsa' => 0,
+            //'esbolsa' => 0,
             'state' => 1,
         ]);
 
@@ -325,7 +325,7 @@ class ProductSeeder extends Seeder
             'tipoafectacion_id' => 1,
             'brand_id' => 1,
             'state' => 1,
-            'esbolsa' => 1,
+            //'esbolsa' => 1,
         ]);
     }
 }

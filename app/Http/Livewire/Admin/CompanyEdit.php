@@ -16,6 +16,7 @@ use App\Models\Ncfacturadiseno;
 use Livewire\WithFileUploads;
 use Illuminate\Support\Facades\Storage;
 //use Illuminate\Support\Facades\Crypt;
+use Illuminate\Support\Str;
 
 class CompanyEdit extends Component
 {
@@ -25,6 +26,7 @@ class CompanyEdit extends Component
     public $company; //guardaremos el company logueado
     public $companysolicitado; //para controlar que modifique su empresa y no de otras
     public $ruc, $razonsocial, $direccion;
+    public $razonsocialaws;
     public $departments, $provinces = [], $districts = [], $currencies;
     public $department_id = "", $province_id = "", $district_id = "";
     public $nombrecomercial;
@@ -37,6 +39,7 @@ class CompanyEdit extends Component
     public $production = "", $ubigeo, $celular, $telefono, $correo, $smtp, $password, $puerto;
     public $boletadisenos, $facturadisenos, $guiadisenos, $ncfacturadisenos, $ncboletadisenos;
     public $boletadiseno_id = "", $facturadiseno_id = "", $guiadiseno_id = "", $ncfacturadiseno_id = "", $ncboletadiseno_id = "";
+    public $restringido, $fechainscripcionempresa;
 
     protected $listeners = ['fechaInicioSeleccionada']; //se escucha este evento, para adicionar 1 año al certificado
 
@@ -52,6 +55,8 @@ class CompanyEdit extends Component
 
         $this->ruc = $this->company->ruc;
         $this->razonsocial = $this->company->razonsocial;
+        $this->razonsocialaws = $this->company->razonsocialaws;
+
         $this->direccion = $this->company->direccion;
         $this->soluser = $this->company->soluser;
         $this->solpass = $this->company->solpass;
@@ -101,12 +106,14 @@ class CompanyEdit extends Component
         $this->password = $this->company->password;
         //$this->smtp = $this->company->smtp;
 
-        $this->boletadiseno_id =  $this->company->boletadiseno_id; 
+        $this->boletadiseno_id =  $this->company->boletadiseno_id;
         $this->facturadiseno_id =  $this->company->facturadiseno_id;
         $this->guiadiseno_id =  $this->company->guiadiseno_id;
-        $this->ncfacturadiseno_id =  $this->company->ncfacturadiseno_id; 
+        $this->ncfacturadiseno_id =  $this->company->ncfacturadiseno_id;
         $this->ncboletadiseno_id =  $this->company->ncboletadiseno_id;
 
+        $this->restringido = $this->company->restringido;
+        $this->fechainscripcionempresa = $this->company->fechainscripcionempresa;
     }
 
 
@@ -168,6 +175,8 @@ class CompanyEdit extends Component
         'puerto' => 'nullable',
         'fechainiciocertificado' => 'nullable',
         'fechafincertificado' => 'nullable',
+        'restringido' => 'nullable',
+        'fechainscripcionempresa' => 'nullable',
         //'logo' => 'required',
     ];
 
@@ -195,6 +204,15 @@ class CompanyEdit extends Component
 
         // ✅ Validamos TODO una sola vez
         $validated = $this->validate($rules);
+
+
+        // ✅ Solo se setea 1 vez (si en BD está vacío). Luego jamás se toca.
+        $razonSocialAwsFinal = $this->company->razonsocialaws;
+
+        if (blank($razonSocialAwsFinal)) {
+            $base = trim($this->razonsocial . ' ' . $this->ruc);  // concat correcto
+            $razonSocialAwsFinal = Str::slug($base, '-');         // slug
+        }
 
         // Subimos archivos si existen
         /* $certificate_pathoo = $this->certificate_path
@@ -266,25 +284,35 @@ class CompanyEdit extends Component
 
             // Guardar en S3 (privado)
             $path = Storage::disk('s3')->putFileAs(
-                $this->company->razonsocial . '/certificados',
+                $razonSocialAwsFinal . '/certificados',
                 $this->certificate_path,
                 $newName,
                 'private'
             );
-        }else {
+        } else {
             $path = $this->certificate_pathback;
         }
 
         //$encryptedPassword = Crypt::encryptString($this->certificate_password);
 
         $logoo = $this->logo
-            ? Storage::disk('s3_public')->put('fe/' .$this->company->razonsocial . '/logos', $this->logo, 'public')
+            ? Storage::disk('s3_public')->put('fe/' . $razonSocialAwsFinal . '/logos', $this->logo, 'public')
             : $this->company->logo;
+
+
+
+
+
+
+
+
+
 
         // Actualizamos el modelo
         $this->company->update([
             'ruc' => $this->ruc,
             'razonsocial' => $this->razonsocial,
+            'razonsocialaws' => $razonSocialAwsFinal, // ✅ fijo
             'nombrecomercial' => $this->nombrecomercial,
             'direccion' => $this->direccion,
             'ubigeo' => $this->ubigeo,
@@ -308,6 +336,8 @@ class CompanyEdit extends Component
             'fechainiciocertificado' => $this->fechainiciocertificado,
             'fechafincertificado' => $this->fechafincertificado,
             'logo' => $logoo,
+            'restringido' => $this->restringido,
+            'fechainscripcionempresa' => $this->fechainscripcionempresa,
         ]);
 
         $this->emit('alert', 'Los datos de tu Empresa se actualizaron correctamente');

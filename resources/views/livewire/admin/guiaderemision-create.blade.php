@@ -128,7 +128,7 @@
                             </div>
 
                             <div class="col-span-1 mr-1 sm:col-span-2 md:col-span-2">
-                                <x-jet-label value="Peso Total" />
+                                <x-jet-label value="Peso Total en Kg" />
                                 <x-jet-input wire:model="pesototal" type="number"
                                     class="w-full h-10 max-w-md uppercase" />
                                 <x-jet-input-error for="pesototal" />

@@ -177,18 +177,19 @@
                 @endcan
 
 
-                <article>
-                    <figure>
-                        <img class="object-cover w-full rounded-xl h-36" src="{{ asset('img/customers.jpg') }}"
-                            alt="TICOMSOFTWARE">
-                    </figure>
-                    <header class="mt-2">
-                        <h1 class="text-xl text-center text-gray-700"><a
-                                href="{{ route('customer.list') }}">Clientes</a></h1>
-                    </header>
+                @can('Customer View')
+                    <article>
+                        <figure>
+                            <img class="object-cover w-full rounded-xl h-36" src="{{ asset('img/customers.jpg') }}"
+                                alt="TICOMSOFTWARE">
+                        </figure>
+                        <header class="mt-2">
+                            <h1 class="text-xl text-center text-gray-700"><a
+                                    href="{{ route('customer.list') }}">Clientes</a></h1>
+                        </header>
 
-                </article>
-
+                    </article>
+                @endcan
 
                 {{--  @can('Inventory View')
                                 <article>
@@ -237,8 +238,8 @@
                 @can('Transportista View')
                     <article>
                         <figure>
-                            <img class="object-cover w-full rounded-xl h-36"
-                                src="{{ asset('img/recepciondemercaderias.jpg') }}" alt="Recepción de Mercaderias">
+                            <img class="object-cover w-full rounded-xl h-36" src="{{ asset('img/transportista.jpg') }}"
+                                alt="Transportistas">
                         </figure>
                         <header class="mt-2">
                             <h1 class="text-xl text-center text-gray-700"><a
@@ -250,11 +251,11 @@
 
 
 
-                @can('Transportista View')
+                @can('Puntodepartida View')
                     <article>
                         <figure>
-                            <img class="object-cover w-full rounded-xl h-36"
-                                src="{{ asset('img/recepciondemercaderias.jpg') }}" alt="Recepción de Mercaderias">
+                            <img class="object-cover w-full rounded-xl h-36" src="{{ asset('img/puntodepartida.jpg') }}"
+                                alt="Punto de Partida">
                         </figure>
                         <header class="mt-2">
                             <h1 class="text-xl text-center text-gray-700"><a
@@ -268,8 +269,8 @@
                 @can('Conductor View')
                     <article>
                         <figure>
-                            <img class="object-cover w-full rounded-xl h-36"
-                                src="{{ asset('img/recepciondemercaderias.jpg') }}" alt="Recepción de Mercaderias">
+                            <img class="object-cover w-full rounded-xl h-36" src="{{ asset('img/conductores.jpg') }}"
+                                alt="Conductores">
                         </figure>
                         <header class="mt-2">
                             <h1 class="text-xl text-center text-gray-700"><a
@@ -279,27 +280,27 @@
                     </article>
                 @endcan
 
+                @can('Vehiculo View')
+                    <article>
+                        <figure>
+                            <img class="object-cover w-full rounded-xl h-36" src="{{ asset('img/vehiculos.jpg') }}"
+                                alt="Veh+iculos">
+                        </figure>
+                        <header class="mt-2">
+                            <h1 class="text-xl text-center text-gray-700"><a
+                                    href="{{ route('vehiculo.list') }}">Vehículos</a></h1>
+                        </header>
 
-                <article>
-                    <figure>
-                        <img class="object-cover w-full rounded-xl h-36"
-                            src="{{ asset('img/recepciondemercaderias.jpg') }}" alt="Veh+iculos">
-                    </figure>
-                    <header class="mt-2">
-                        <h1 class="text-xl text-center text-gray-700"><a
-                                href="{{ route('vehiculo.list') }}">Vehículos</a></h1>
-                    </header>
-
-                </article>
+                    </article>
+                @endcan
 
 
 
-
-                @can('Sale View')
+                {{-- @can('Comprobante View') --}}
                     <article>
                         <figure>
                             <img class="object-cover w-full rounded-xl h-36" src="{{ asset('img/pos.jpg') }}"
-                                alt="">
+                                alt="POS">
                         </figure>
                         <header class="mt-2">
                             <h1 class="text-xl text-center text-gray-700"><a
@@ -307,12 +308,12 @@
                         </header>
 
                     </article>
-                @endcan
+                {{-- @endcan --}}
 
                 {{-- @can('Sale View') --}}
                 <article>
                     <figure>
-                        <img class="object-cover w-full rounded-xl h-36" src="{{ asset('img/1.jpg') }}" alt="">
+                        <img class="object-cover w-full rounded-xl h-36" src="{{ asset('img/1.jpg') }}" alt="Resumen">
                     </figure>
                     <header class="mt-2">
                         <h1 class="text-xl text-center text-gray-700"><a
@@ -322,32 +323,82 @@
                 </article>
                 {{-- @endcan --}}
 
-                <article>
-                    <figure>
-                        <img class="object-cover w-full rounded-xl h-36" src="{{ asset('img/pos.jpg') }}"
-                            alt="">
-                    </figure>
-                    <header class="mt-2">
-                        <h1 class="text-xl text-center text-gray-700"><a
-                                href="{{ route('admin.guia.list') }}">Guias</a></h1>
-                    </header>
+                @can('Guia View')
+                    <article>
+                        <figure>
+                            <img class="object-cover w-full rounded-xl h-36" src="{{ asset('img/guias.jpg') }}"
+                                alt="Guias">
+                        </figure>
+                        <header class="mt-2">
+                            <h1 class="text-xl text-center text-gray-700"><a
+                                    href="{{ route('admin.guia.list') }}">Guias</a></h1>
+                        </header>
+                    </article>
+                @endcan
 
-                </article>
+                @auth
+                    @if (auth()->user()->email === 'michael@ticomperu.com')
+                        <article>
+                            <figure>
+                                <img class="object-cover w-full rounded-xl h-36"
+                                    src="{{ asset('img/disenodeboletas.jpg') }}" alt="Diseño Boletas">
+                            </figure>
+                            <header class="mt-2">
+                                <h1 class="text-xl text-center text-gray-700"><a
+                                        href="{{ route('admin.boletadiseno.list') }}">Diseño Boletas</a></h1>
+                            </header>
 
-                 <article>
-                    <figure>
-                        <img class="object-cover w-full rounded-xl h-36" src="{{ asset('img/pos.jpg') }}"
-                            alt="">
-                    </figure>
-                    <header class="mt-2">
-                        <h1 class="text-xl text-center text-gray-700"><a
-                                href="{{ route('admin.boletadiseno.list') }}">Diseño Boletas</a></h1>
-                    </header>
+                        </article>
 
-                </article>
+                        <article>
+                            <figure>
+                                <img class="object-cover w-full rounded-xl h-36"
+                                    src="{{ asset('img/disenodefacturas.jpg') }}" alt="Diseño Facturas">
+                            </figure>
+                            <header class="mt-2">
+                                <h1 class="text-xl text-center text-gray-700"><a
+                                        href="{{ route('admin.facturadiseno.list') }}">Diseño Facturas</a></h1>
+                            </header>
 
+                        </article>
 
+                        <article>
+                            <figure>
+                                <img class="object-cover w-full rounded-xl h-36"
+                                    src="{{ asset('img/disenodeguias.jpg') }}" alt="Diseño Guias">
+                            </figure>
+                            <header class="mt-2">
+                                <h1 class="text-xl text-center text-gray-700"><a
+                                        href="{{ route('admin.guiadiseno.list') }}">Diseño Guias</a></h1>
+                            </header>
 
+                        </article>
+
+                        <article>
+                            <figure>
+                                <img class="object-cover w-full rounded-xl h-36"
+                                    src="{{ asset('img/disenodenotadecreditofacturas.jpg') }}" alt="Diseño NC Factura">
+                            </figure>
+                            <header class="mt-2">
+                                <h1 class="text-xl text-center text-gray-700"><a
+                                        href="{{ route('admin.ncfacturadiseno.list') }}">Diseño NC Factura</a></h1>
+                            </header>
+
+                        </article>
+
+                        <article>
+                            <figure>
+                                <img class="object-cover w-full rounded-xl h-36"
+                                    src="{{ asset('img/disenodenotadecreditoboletas.jpg') }}" alt="Diseño NC Boleta">
+                            </figure>
+                            <header class="mt-2">
+                                <h1 class="text-xl text-center text-gray-700"><a
+                                        href="{{ route('admin.ncboletadiseno.list') }}">Diseño NC Boleta</a></h1>
+                            </header>
+
+                        </article>
+                    @endif
+                @endauth
 
                 {{-- <article>
                                     <figure>

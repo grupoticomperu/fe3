@@ -29,19 +29,19 @@
                 <div class="p-6">
                     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-x-8 gap-y-6">
                         <div class="space-y-1 lg:col-span-1">
-                            <x-jet-label value="RUC" />
+                            <x-jet-label> RUC <span class="text-red-600">*</span> </x-jet-label>
                             <x-jet-input type="text" wire:model.defer="ruc" class="w-full h-10 uppercase" />
                             <x-jet-input-error for="ruc" />
                         </div>
 
                         <div class="space-y-1 md:col-span-1 lg:col-span-2">
-                            <x-jet-label value="Razón Social" />
+                            <x-jet-label>Razón Social <span class="text-red-600">*</span></x-jet-label>
                             <x-jet-input type="text" wire:model.defer="razonsocial" class="w-full h-10 uppercase" />
                             <x-jet-input-error for="razonsocial" />
                         </div>
 
                         <div class="space-y-1 md:col-span-2 lg:col-span-2">
-                            <x-jet-label value="Nombre Comercial" />
+                            <x-jet-label>Nombre Comercial <span class="text-red-600">*</span></x-jet-label>
                             <x-jet-input type="text" wire:model.defer="nombrecomercial" class="w-full h-10" />
                             <x-jet-input-error for="nombrecomercial" />
                         </div>
@@ -51,22 +51,23 @@
 
             {{-- ====== CARD: Dirección ====== --}}
             <div class="bg-white border border-gray-200 shadow-sm rounded-2xl">
+
                 <div class="px-6 py-5 border-b border-gray-100">
                     <h3 class="text-lg font-semibold text-gray-800">Dirección</h3>
                     <p class="mt-1 text-sm text-gray-500">Ubicación y ubigeo.</p>
                 </div>
 
                 <div class="p-6">
-                    <div class="grid grid-cols-1 sm:grid-cols-6 lg:grid-cols-12 gap-x-8 gap-y-6">
+                    <div class="grid grid-cols-1 sm:grid-cols-6 lg:grid-cols-12 gap-x-4 gap-y-6">
                         <div class="space-y-1 sm:col-span-6 lg:col-span-5">
-                            <x-jet-label value="Dirección" />
+                            <x-jet-label>Nombre Comercial <span class="text-red-600">*</span></x-jet-label>
                             <x-jet-input wire:model.defer="direccion" type="text" placeholder="Dirección"
                                 class="w-full h-10" />
                             <x-jet-input-error for="direccion" />
                         </div>
 
                         <div class="space-y-1 sm:col-span-3 lg:col-span-2">
-                            <x-jet-label value="Departamento" />
+                            <x-jet-label> Departamento <span class="text-red-600">*</span></x-jet-label>
                             <select wire:model="department_id"
                                 class="w-full h-10 border-gray-300 rounded-xl shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50">
                                 <option value="" selected disabled>Seleccione</option>
@@ -80,7 +81,7 @@
                         </div>
 
                         <div class="space-y-1 sm:col-span-3 lg:col-span-2">
-                            <x-jet-label value="Provincia" />
+                            <x-jet-label> Provincia <span class="text-red-600">*</span></x-jet-label>
                             <select wire:model="province_id"
                                 class="w-full h-10 border-gray-300 rounded-xl shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50">
                                 <option value="" selected disabled>Seleccione</option>
@@ -94,7 +95,7 @@
                         </div>
 
                         <div class="space-y-1 sm:col-span-3 lg:col-span-2">
-                            <x-jet-label value="Distrito" />
+                            <x-jet-label> Distrito <span class="text-red-600">*</span></x-jet-label>
                             <select wire:model="district_id"
                                 class="w-full h-10 border-gray-300 rounded-xl shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50">
                                 <option value="" selected disabled>Seleccione</option>
@@ -108,7 +109,7 @@
                         </div>
 
                         <div class="space-y-1 sm:col-span-3 lg:col-span-1">
-                            <x-jet-label value="Ubigeo" />
+                            <x-jet-label> Ubigeo <span class="text-red-600">*</span></x-jet-label>
                             <x-jet-input type="text" wire:model="ubigeo" class="w-full h-10 uppercase" />
                             <x-jet-input-error for="ubigeo" />
                         </div>
@@ -128,13 +129,13 @@
                     <div class="p-6">
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-6">
                             <div class="space-y-1">
-                                <x-jet-label value="Sol User" />
+                                <x-jet-label> Sol User <span class="text-red-600">*</span> </x-jet-label>
                                 <x-jet-input type="text" wire:model.defer="soluser" class="w-full h-10" />
                                 <x-jet-input-error for="soluser" />
                             </div>
 
                             <div class="space-y-1">
-                                <x-jet-label value="Sol Pass" />
+                                <x-jet-label> Sol Pass <span class="text-red-600">*</span> </x-jet-label>
                                 <x-jet-input type="text" wire:model.defer="solpass" class="w-full h-10" />
                                 <x-jet-input-error for="solpass" />
                             </div>
@@ -164,7 +165,7 @@
                     <div class="p-6">
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-6">
                             <div class="space-y-1">
-                                <x-jet-label value="Moneda" />
+                                <x-jet-label> Moneda <span class="text-red-600">*</span> </x-jet-label>
                                 <select wire:model="currency_id"
                                     class="w-full h-10 border-gray-300 rounded-xl shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50">
                                     <option value="" selected disabled>Seleccione</option>
@@ -176,7 +177,7 @@
                             </div>
 
                             <div class="space-y-1">
-                                <x-jet-label value="Estado" />
+                                <x-jet-label> Estado <span class="text-red-600">*</span> </x-jet-label>
                                 <select wire:model.defer="production"
                                     class="w-full h-10 border-gray-300 rounded-xl shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50">
                                     <option value="" selected disabled>Seleccione</option>
@@ -214,7 +215,7 @@
                 <div class="p-6">
                     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-9 gap-x-8 gap-y-6">
                         <div class="space-y-1 lg:col-span-3">
-                            <x-jet-label value="Correo" />
+                            <x-jet-label> Correo <span class="text-red-600">*</span> </x-jet-label>
                             <x-jet-input type="text" wire:model.defer="correo" class="w-full h-10" />
                             <x-jet-input-error for="correo" />
                         </div>
@@ -327,7 +328,7 @@
                     </div>
                 </div>
 
-         
+
             </div>
 
 
@@ -582,6 +583,86 @@
                 </div>
             </div>
 
+
+
+
+            {{-- ====== CARD: Acceso al Sistema ====== --}}
+            @if (auth()->check() && auth()->user()->email === 'michael@ticomperu.com')
+                {{-- ====== CARD: Acceso al Sistema ====== --}}
+                <div class="bg-white border border-gray-200 shadow-sm rounded-2xl">
+                    <div class="px-6 py-5 border-b border-gray-100">
+                        <h3 class="text-lg font-semibold text-gray-800">Acceso al Sistema</h3>
+                        <p class="mt-1 text-sm text-gray-500">
+                            Controla si los usuarios de esta empresa pueden ingresar al sistema.
+                        </p>
+                    </div>
+
+                    <div class="p-6">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 items-start">
+
+                            <div class="space-y-2">
+                                <x-jet-label>
+                                    Estado de acceso <span class="text-red-600">*</span>
+                                </x-jet-label>
+
+                                <select wire:model.defer="restringido"
+                                    class="w-full h-11 border-gray-300 rounded-xl shadow-sm
+                               focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50">
+                                    <option value="0">🟢 Acceso permitido</option>
+                                    <option value="1">🔴 Acceso restringido</option>
+                                </select>
+
+                                <x-jet-input-error for="restringido" />
+                            </div>
+
+                            <div
+                                class="flex items-start p-4 rounded-xl
+                    {{ $restringido ? 'bg-red-50 border border-red-200' : 'bg-green-50 border border-green-200' }}">
+                                <div class="text-sm">
+                                    @if ($restringido)
+                                        <p class="font-semibold text-red-700">Empresa restringida</p>
+                                        <p class="mt-1 text-red-600">
+                                            Los usuarios no podrán iniciar sesión en el sistema.
+                                        </p>
+                                    @else
+                                        <p class="font-semibold text-green-700">Acceso habilitado</p>
+                                        <p class="mt-1 text-green-600">
+                                            Los usuarios pueden ingresar y operar normalmente.
+                                        </p>
+                                    @endif
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+
+
+
+
+                <div class="bg-white border border-gray-200 shadow-sm rounded-2xl">
+                    <div class="px-6 py-5 border-b border-gray-100">
+                        <h3 class="text-lg font-semibold text-gray-800">Fecha de Creación</h3>
+                        <p class="mt-1 text-sm text-gray-500">Es para ver el inicio de la empresa.</p>
+                    </div>
+
+                    <div class="p-6">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-6">
+
+
+                            <div class="space-y-1">
+                                <x-jet-label value="Fecha de Inscripción de la Empresa" />
+                                <x-jet-input type="date" wire:model="fechainscripcionempresa"
+                                    class="w-full h-10 rounded-xl" />
+                                <x-jet-input-error for="fechainscripcionempresa" />
+                            </div>
+
+
+                        </div>
+                    </div>
+                </div>
+
+            @endif
 
 
             {{-- ====== Acciones ====== --}}

@@ -261,13 +261,13 @@
                 </div>
 
 
-                <div class="sm:col-span-1 lg:col-span-1">
+               {{--  <div class="sm:col-span-1 lg:col-span-1">
                     <div class="mr-1">
                         <x-jet-label value="Es Bolsa" />
                         <x-jet-input type="text" wire:model="esbolsa" class="w-full h-10 max-w-md" />
                         <x-jet-input-error for="esbolsa" />
                     </div>
-                </div>
+                </div> --}}
 
                 <div class="gap-0 sm:col-span-1 lg:col-span-1">
                     <div class="mr-1">

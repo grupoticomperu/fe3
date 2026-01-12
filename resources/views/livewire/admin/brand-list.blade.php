@@ -12,8 +12,8 @@
 
     <div class="container py-12 mx-auto border-gray-400 max-w-7xl sm:px-6 lg:px-8">
 
-        {{--  @can('Banner Export') --}}
-        <div class="p-4 mb-6 bg-white">
+
+        {{-- <div class="p-4 mb-6 bg-white">
 
             <div class="flex flex-col items-center justify-between md:flex-row">
                 @can('Export Excel')
@@ -29,8 +29,6 @@
                             <form action="{{ route('brand.importstore') }}" method="POST" enctype="multipart/form-data">
                                 @csrf
 
-                                {{-- <x-jet-validation-errors class="mb-4"> --}}
-
                                 <input type="file" name="file" accept=".csv, .xlxs">
                                 <x-jet-button class="mt-2">Importar</x-jet-button>
                                 <x-jet-input-error for="file" />
@@ -41,8 +39,8 @@
                 @endcan
 
             </div>
-        </div>
-        {{--  @endcan --}}
+        </div> --}}
+   
 
         <div class="items-center px-6 py-4 bg-gray-200 sm:flex">
             <div class="flex items-center justify-center mb-2 md:mb-0">
@@ -299,7 +297,7 @@
 
                                         @if ($brandd->image)
                                             <img class="object-cover w-20 h-10 rounded-sm"
-                                                src="{{ Storage::disk('s3')->url($brandd->image) }}"
+                                                src="{{ Storage::disk('s3_public')->url($brandd->image) }}"
                                                 alt="{{ $brandd->name }}">
                                             {{-- src="{{ url($category->image) }}" alt="{{ $category->name }}"> --}}
                                             {{-- src="{{ Storage::url($brand->image) }}" storage//storage/brand/default.jpg  en la bd esta puesto esto 	/storage/brands/default.jpg > --}}
@@ -564,7 +562,7 @@
                 <img class="mb-4" src="{{ $image->temporaryUrl() }}" alt="cargando imagen">
             @elseif($brand->image)
                 {{-- <img src="{{ url($brand->image) }}" alt="ticom"> --}}
-                <img class="object-cover w-20 h-10 rounded-sm" src="{{ Storage::disk('s3')->url($brand->image) }}"
+                <img class="object-cover w-20 h-10 rounded-sm" src="{{ Storage::disk('s3_public')->url($brand->image) }}"
                     alt="TICOM">
             @endif
 
@@ -656,7 +654,7 @@
                 @endif --}}
 
             @if ($brand->image)
-                <img class="object-cover w-20 h-10 rounded-sm" src="{{ Storage::disk('s3')->url($brand->image) }}"
+                <img class="object-cover w-20 h-10 rounded-sm" src="{{ Storage::disk('s3_public')->url($brand->image) }}"
                     alt="ticom">
             @else
                 <p>No hay imagen</p>

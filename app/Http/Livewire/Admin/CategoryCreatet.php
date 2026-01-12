@@ -104,7 +104,7 @@ class CategoryCreatet extends Component
             $this->validate();
             //$image1 = $this->image1->store('products', 'public');
             //$urlimage1 = Storage::url($image1);
-            $urlimage = Storage::disk('s3')->put('fe/'.$this->company->razonsocial.'/categories', $this->image , 'public');
+            $urlimage = Storage::disk('s3_public')->put('fe/'.$this->company->razonsocial.'/categories', $this->image , 'public');
         }
         else {
             $this->validate();

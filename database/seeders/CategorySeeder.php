@@ -18,22 +18,22 @@ class CategorySeeder extends Seeder
     {
 
         Category::create([
-            'name' => 'General',
-            'slug' => Str::slug('General'),
+            'name' => 'Bolsa',
+            'slug' => Str::slug('bolsa'),
             'state'=>0,
             'depth'=>0,
-            'path' => 'General',
+            'path' => 'Bolsa',
             'parent_id'=> NULL,
             'company_id'=> 1,
 
         ]);
 
         $category1 = Category::create([
-            'name' => 'Damas',
-            'slug' => Str::slug('Ropas para Damas'),
+            'name' => 'Ropas',
+            'slug' => Str::slug('ropas'),
             'state'=>1,
             'depth'=>0,
-            'path' => 'Damas',
+            'path' => 'ropas',
             'parent_id'=> NULL,
             'company_id'=> 1,
         ]);
@@ -41,21 +41,21 @@ class CategorySeeder extends Seeder
 
 
         Category::create([
-            'name' => 'Varones',
-            'slug' => Str::slug('Ropas para Varones'),
+            'name' => 'Computo',
+            'slug' => Str::slug('computo'),
             'state'=>1,
             'depth'=>0,
-            'path' => 'Varones',
+            'path' => 'Computo',
             'parent_id'=> NULL,
             'company_id'=> 1,
         ]);
 
         Category::create([
-            'name' => 'Niños',
-            'slug' => Str::slug('Niños'),
+            'name' => 'Mobiles',
+            'slug' => Str::slug('mobiles'),
             'state'=>1,
             'depth'=>0,
-            'path' => 'Niños',
+            'path' => 'Mobiles',
             'parent_id'=> NULL,
             'company_id'=> 1,
         ]);

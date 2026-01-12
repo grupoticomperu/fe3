@@ -8,8 +8,9 @@ use Illuminate\Database\Eloquent\Model;
 class Ncboletadiseno extends Model
 {
     use HasFactory;
+    protected $guarded = ['id', 'created_at', 'updated_at'];
 
-        //Relacion uno a muchos
+    //Relacion uno a muchos
     public function companies(){
         return $this->hasMany(Company::class);
     }

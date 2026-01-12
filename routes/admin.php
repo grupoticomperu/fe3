@@ -69,9 +69,21 @@ use App\Http\Livewire\Admin\BoletadisenoList;
 use App\Http\Livewire\Admin\ConductorCreate;
 use App\Http\Livewire\Admin\ConductorEdit;
 use App\Http\Livewire\Admin\ConductorList;
+use App\Http\Livewire\Admin\FacturadisenoCreate;
+use App\Http\Livewire\Admin\FacturadisenoEdit;
+use App\Http\Livewire\Admin\FacturadisenoList;
+use App\Http\Livewire\Admin\GuiadisenoCreate;
+use App\Http\Livewire\Admin\GuiadisenoEdit;
+use App\Http\Livewire\Admin\GuiadisenoList;
 use App\Http\Livewire\Admin\GuiaList;
 use App\Http\Livewire\Admin\LocalproductatributestockList;
 use App\Http\Livewire\Admin\LocalproductatributestocktotalesList;
+use App\Http\Livewire\Admin\NcboletadisenoCreate;
+use App\Http\Livewire\Admin\NcboletadisenoEdit;
+use App\Http\Livewire\Admin\NcboletadisenoList;
+use App\Http\Livewire\Admin\NcfacturadisenoCreate;
+use App\Http\Livewire\Admin\NcfacturadisenoEdit;
+use App\Http\Livewire\Admin\NcfacturadisenoList;
 use App\Http\Livewire\Admin\PuntodepartidaCreate;
 use App\Http\Livewire\Admin\PuntodepartidaEdit;
 use App\Http\Livewire\Admin\PuntodepartidaList;
@@ -197,6 +209,24 @@ Route::get('boletadiseno', BoletadisenoList::class)->name('admin.boletadiseno.li
 Route::get('boletadiseno/create', BoletadisenoCreate::class)->name('admin.boletadiseno.create');
 Route::get('boletadiseno/{boletadiseno}/edit',BoletadisenoEdit::class)->name('admin.boletadiseno.edit');
 
+Route::get('facturadiseno', FacturadisenoList::class)->name('admin.facturadiseno.list');
+Route::get('facturadiseno/create', FacturadisenoCreate::class)->name('admin.facturadiseno.create');
+Route::get('facturadiseno/{facturadiseno}/edit', FacturadisenoEdit::class)->name('admin.facturadiseno.edit');
+
+
+Route::get('guiadiseno', GuiadisenoList::class)->name('admin.guiadiseno.list');
+Route::get('guiadiseno/create', GuiadisenoCreate::class)->name('admin.guiadiseno.create');
+Route::get('guiadiseno/{guiadiseno}/edit', GuiadisenoEdit::class)->name('admin.guiadiseno.edit');
+
+Route::get('ncboletadiseno', NcboletadisenoList::class)->name('admin.ncboletadiseno.list');
+Route::get('ncboletadiseno/create', NcboletadisenoCreate::class)->name('admin.ncboletadiseno.create');
+Route::get('ncboletadiseno/{ncboletadiseno}/edit', NcboletadisenoEdit::class)->name('admin.ncboletadiseno.edit');
+
+Route::get('ncfacturadiseno', NcfacturadisenoList::class)->name('admin.ncfacturadiseno.list');
+Route::get('ncfacturadiseno/create', NcfacturadisenoCreate::class)->name('admin.ncfacturadiseno.create');
+Route::get('ncfacturadiseno/{ncfacturadiseno}/edit', NcfacturadisenoEdit::class)->name('admin.ncfacturadiseno.edit');
+
+
 //Route::get('products', ProductList::class)->name('product.list');
 Route::get('productcompuesto/{product}', ProductcompuestoCreate::class)->name('productcompuesto.create');//creamos el producto productatribute
 Route::get('productcompuestoedit/{product}', ProductcompuestoEdit::class)->name('productcompuesto.edit');
@@ -268,6 +298,10 @@ Route::get('/logout', function () {
 //borrar
 
 Route::get('/update-name2', [DepartmentController::class, 'updateName2']);//para llanar name2 de departments
+
+Route::get('/categories', CategoryList::class)->name('category.list');
+
+Route::get('/comprobantes', ComprobanteList::class)->name('comprobante.list');
 
 /* Route::get('existe', function(){
     if (Storage::exists('certificates/certificate_1.pem')) {

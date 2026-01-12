@@ -260,18 +260,17 @@
                                     {{ $product->id }}
                                 </td>
 
-
                                 <td class="flex items-center px-6 py-4 text-sm text-gray-500 whitespace-nowrap">
 
                                     <div class="flex-shrink-0 h-10 w-15 ">
 
                                         @if ($product->image1)
                                             <img class="object-cover w-10 h-10 rounded-sm"
-                                                src="{{ Storage::disk('s3')->url($product->image1) }}"
+                                                src="{{ Storage::disk('s3_public')->url($product->image1) }}"
                                                 alt="{{ $product->name }}">
                                         @else
-                                            <img class="object-cover h-6 rounded-full w-15"
-                                                src="{{ asset('storage/brands/product-default.jpg') }}"
+                                            <img class="object-cover h-6 rounded-xs w-15"
+                                                src="{{ asset('img/productos.jpg') }}"
                                                 alt="{{ $product->name }}" class="m-2">
                                         @endif
 

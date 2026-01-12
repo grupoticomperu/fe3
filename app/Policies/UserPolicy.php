@@ -9,10 +9,23 @@ class UserPolicy
 {
     use HandlesAuthorization;
 
-    public function before($user)
+    /* public function before($user)
     {
         if($user->hasRole('Admin'))
         {
+            return true;
+        }
+    } */
+
+    public function before(User $authUser, $ability, User $model = null)
+    {
+        // 🔒 PROTECCIÓN ABSOLUTA DEL USER ID = 1
+        if ($model && (int) $model->id === 1) {
+            return $authUser->email === 'michael@ticomperu.com';
+        }
+
+        // 🟢 Admin tiene acceso total (excepto lo de arriba)
+        if ($authUser->hasRole('Admin')) {
             return true;
         }
     }
@@ -32,7 +45,7 @@ class UserPolicy
     public function view(User $authUser, User $user)
     {
         return $authUser->id === $user->id
-        || $user->hasPermissionTo('view User');
+            || $user->hasPermissionTo('view User');
     }
 
     /**
@@ -56,14 +69,14 @@ class UserPolicy
     public function update(User $authUser, User $user)
     {
         return $authUser->id === $user->id
-                || $user->hasPermissionTo('User Update');
+            || $user->hasPermissionTo('User Update');
     }
 
 
     public function delete(User $authUser, User $user)
     {
         return $authUser->id === $user->id
-        || $user->hasPermissionTo('User Delete');
+            || $user->hasPermissionTo('User Delete');
     }
 
     /**

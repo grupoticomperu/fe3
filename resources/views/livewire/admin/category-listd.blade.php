@@ -42,7 +42,7 @@
                                             @if ($category->image)
 
                                                 <img class="object-cover w-20 h-10 rounded-sm"
-                                                src="{{ Storage::disk('s3')->url($category->image) }}" alt="{{ $category->name }}">
+                                                src="{{ Storage::disk('s3_public')->url($category->image) }}" alt="{{ $category->name }}">
                                                 {{-- src="{{ url($category->image) }}" alt="{{ $category->name }}"> --}}
                                                 {{-- src="{{ Storage::url($brand->image) }}" storage//storage/brand/default.jpg  en la bd esta puesto esto 	/storage/brands/default.jpg > --}}
                                                 {{-- url($brand->image) muestra tal como es la ruta en la bd esta puesto esto 	/storage/brands/default.jpg --}}

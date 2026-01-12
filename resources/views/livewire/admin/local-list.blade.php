@@ -8,7 +8,7 @@
                 Lista de Locales
             </h2>
             {{-- <x-jet-button wire:click="generateReport">Exportar</x-jet-button> --}}
-        </div </x-slot>
+        </div> </x-slot>
 
         <!-- This example requires Tailwind CSS v2.0+ -->
         <div class="container py-12 mx-auto border-gray-400 max-w-7xl sm:px-6 lg:px-8">

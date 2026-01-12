@@ -17,6 +17,8 @@ return new class extends Migration
             $table->id();
             $table->string('ruc')->nullable();
             $table->string('razonsocial')->nullable();
+            $table->string('razonsocialaws')->nullable();//este campo se crea para que cuando cambien algo en la razon social principal no afecte a la generacion de imagenes en aws
+            //este campo no se muestra estara oculto para el usuario
             $table->string('nombrecomercial')->nullable();
 
             $table->string('direccion')->nullable();
@@ -52,6 +54,12 @@ return new class extends Migration
             $table->boolean('state')->default(1);
             $table->string('ublversion')->nullable();
             $table->decimal('detraccion', 10, 4)->default(700);
+
+
+            $table->boolean('restringido')->default(0);
+            $table->date('fechainscripcionempresa')->nullable();
+            
+
             //$table->foreignId('currency_id')->constrained();//moneda por defecto para los comprobantes
             $table->unsignedBigInteger('currency_id')->nullable();
             $table->foreign('currency_id')->references('id')->on('currencies')->onDelete('cascade');

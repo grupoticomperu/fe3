@@ -53,7 +53,7 @@ class ProductCreate extends Component
         'category_id'=>'required',
         'brand_id'=>'required',
         'tipoafectacion_id'=>'required',
-        'esbolsa'=>'nullable',
+        //'esbolsa'=>'nullable',
         'detraccion'=>'nullable',
         'percepcion'=>'nullable',
         'state'=>'nullable',
@@ -156,7 +156,7 @@ class ProductCreate extends Component
             $rules['image1'] = 'require|image|mimes:jpeg,png|max:2048';
             //$this->validate();
             //$urlimage1 = $this->image1->store('products');
-            $urlimage1 = Storage::disk('s3')->put('fe/'.$this->company->razonsocial.'/products', $this->image1 , 'public');
+            $urlimage1 = Storage::disk('s3_public')->put('fe/'.$this->company->razonsocial.'/products', $this->image1 , 'public');
         }
         else {
 
@@ -171,7 +171,7 @@ class ProductCreate extends Component
             $rules = $this->rules;
             $rules['image2'] = 'require|image|mimes:jpeg,png|max:2048';
             //$this->validate();
-            $urlimage2 = Storage::disk('s3')->put('fe/'.$this->company->razonsocial.'/products', $this->image2 , 'public');
+            $urlimage2 = Storage::disk('s3_public')->put('fe/'.$this->company->razonsocial.'/products', $this->image2 , 'public');
         }
         else {
             //$this->validate();
@@ -185,7 +185,7 @@ class ProductCreate extends Component
             $rules = $this->rules;
             $rules['image3'] = 'require|image|mimes:jpeg,png|max:2048';
             //$this->validate();
-            $urlimage3 = Storage::disk('s3')->put('fe/'.$this->company->razonsocial.'/products', $this->image3 , 'public');
+            $urlimage3 = Storage::disk('s3_public')->put('fe/'.$this->company->razonsocial.'/products', $this->image3 , 'public');
         }
         else {
             //$this->validate();
@@ -199,7 +199,7 @@ class ProductCreate extends Component
             $rules = $this->rules;
             $rules['image4'] = 'require|image|mimes:jpeg,png|max:2048';
             //$this->validate();
-            $urlimage4 = Storage::disk('s3')->put('fe/'.$this->company->razonsocial.'/products', $this->image4 , 'public');
+            $urlimage4 = Storage::disk('s3_public')->put('fe/'.$this->company->razonsocial.'/products', $this->image4 , 'public');
         }
         else {
             //$this->validate();
@@ -229,7 +229,7 @@ class ProductCreate extends Component
             'category_id' => $this->lastSelectedParentCategory,
             'brand_id' => $this->brand_id,
             'tipoafectacion_id' => $this->tipoafectacion_id,
-            'esbolsa' => $this->esbolsa,
+            //'esbolsa' => $this->esbolsa,
             'detraccion' => $this->detraccion,
             'percepcion' => $this->percepcion,
             'state' => $this->state,

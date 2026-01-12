@@ -27,7 +27,8 @@ class ProductEdit extends Component
     public $purchaseprice, $saleprice, $salepricemin, $mtovalorgratuito, $mtovalorunitario, $currency_id = "";
     public $um_id = "", $modelo_id = "", $brand_id = "", $tipoafectacion_id = "";
     public $category_id;
-    public $esbolsa, $detraccion, $percepcion, $state;
+    public $esbolsa;
+    public $detraccion, $percepcion, $state;
     public $image1, $image2, $image3, $image4, $image1back, $image2back, $image3back, $image4back;
     public $breadcrumbs;
 
@@ -88,7 +89,7 @@ class ProductEdit extends Component
 
         $this->tipoafectacion_id = $this->product->tipoafectacion_id;
         $this->category_id = $this->product->category_id;
-        $this->esbolsa = $this->product->esbolsa;
+        //$this->esbolsa = $this->product->esbolsa;
         $this->detraccion = $this->product->detraccion;
         $this->percepcion = $this->product->percepcion;
         $this->state = $this->product->state;
@@ -126,7 +127,7 @@ class ProductEdit extends Component
         'category_id'=>'required',
         'brand_id'=>'required',
         'tipoafectacion_id'=>'required',
-        'esbolsa'=>'nullable',
+        //'esbolsa'=>'nullable',
         'detraccion'=>'nullable',
         'percepcion'=>'nullable',
         'state'=>'nullable',
@@ -175,7 +176,7 @@ class ProductEdit extends Component
         $this->product->brand_id = $this->brand_id;
         $this->product->tipoafectacion_id = $this->tipoafectacion_id;
         $this->product->category_id = $this->category_id;
-        $this->product->esbolsa = $this->esbolsa;
+       // $this->product->esbolsa = $this->esbolsa;
         $this->product->detraccion = $this->detraccion;
         $this->product->percepcion = $this->percepcion;
         $this->product->state = $this->state;

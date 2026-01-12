@@ -74,7 +74,7 @@
                             <thead class="bg-gray-50">
                                 <tr>
 
-                                    <th scope="col"
+                                   {{--  <th scope="col"
                                         class="w-24 px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase cursor-pointer"
                                         wire:click="order('id')">
 
@@ -89,7 +89,7 @@
                                         @else
                                             <i class="float-right mt-1 fas fa-sort"></i>
                                         @endif
-                                    </th>
+                                    </th> --}}
 
 
 
@@ -179,33 +179,24 @@
                                 @foreach ($users as $userr)
                                     <tr>
 
-                                        <td class="px-6 py-4 text-sm text-gray-500 whitespace-nowrap">
+                                        {{-- <td class="px-6 py-4 text-sm text-gray-500 whitespace-nowrap">
                                             {{ $userr->id }}
-                                        </td>
+                                        </td> --}}
 
                                         <td class="flex items-center px-6 py-4 text-sm text-gray-500 whitespace-nowrap">
 
-                                            <div class="flex-shrink-0 h-10 w-15 ">
+                                            {{--  <div class="flex-shrink-0 h-10 w-15 ">
                                                 @if ($userr->employee)
                                                     @if ($userr->employee->photo)
 
                                                         <img class="object-cover w-10 h-10 rounded-sm"
-                                                            src="{{ Storage::disk('s3')->url($userr->employee->photo) }}"
+                                                            src="{{ Storage::disk('s3_public')->url($userr->employee->photo) }}"
                                                             alt="TICOM">
-                                                        {{-- @else
-                                                        <img class="object-cover w-10 h-10 rounded-full"
-                                                            src="https://images.pexels.com/photos/4883800/pexels-photo-4883800.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940"
-                                                            alt=""> --}}
+                                                       
                                                     @endif
-                                                    {{-- src="{{ Storage::url($brand->image) }}" storage//storage/brand/default.jpg  en la bd esta puesto esto 	/storage/brands/default.jpg > --}}
-                                                    {{-- url($brand->image) muestra tal como es la ruta en la bd esta puesto esto 	/storage/brands/default.jpg --}}
-                                                    {{--  {{ Storage::disk("s3")->url($brand->image) }} --}}
-                                                    {{--  @else
-                                                    <img class="object-cover w-10 h-10 rounded-full"
-                                                        src="https://images.pexels.com/photos/4883800/pexels-photo-4883800.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940"
-                                                        alt=""> --}}
+                                                    
                                                 @endif
-                                            </div>
+                                            </div> --}}
                                             <div class="ml-4">
                                                 {{ $userr->name }}
                                             </div>
@@ -246,16 +237,29 @@
                                         <td>{{ $userr->getRoleNames()->implode(', ') }}</td>
 
                                         <td class="px-6 py-4 text-sm font-medium text-right whitespace-nowrap">
-                                            <a class="btn btn-blue"><i class="fa-sharp fa-solid fa-eye"></i></a>
+                                            {{-- <a class="btn btn-blue"><i class="fa-sharp fa-solid fa-eye"></i></a> --}}
                                             {{--  @can('update User') --}}
                                             <a href="{{ route('admin.user.edit', $userr) }}" class="btn btn-green"><i
                                                     class="fa-solid fa-pen-to-square"></i></a>
                                             {{--  @endcan
                                                     @can('delete User') --}}
-                                            <a class="btn btn-red"
+                                            {{-- <a class="btn btn-red"
                                                 wire:click="$emit('deleteUser', {{ $userr->id }})">
                                                 <i class="fa-solid fa-trash-can"></i>
-                                            </a>
+                                            </a> --}}
+
+
+
+                                            @if ($userr->id != 2)
+                                                <a class="btn btn-red"
+                                                    wire:click="$emit('deleteUser', {{ $userr->id }})">
+                                                    <i class="fa-solid fa-trash-can"></i>
+                                                </a>
+                                            @endif
+
+
+
+
                                             {{--  @endcan --}}
 
                                         </td>
@@ -318,7 +322,7 @@
             </div>
 
 
-            <x-slot name="footer">
+            {{-- <x-slot name="footer">
 
                 <h2 class="text-xl font-semibold leading-tight text-gray-600">
                     Pie
@@ -326,15 +330,38 @@
 
 
             </x-slot>
-
-
-
-
-
-
-            @push('scripts')
-            @endpush
-
+ --}}
     </div>
+
+
+    @push('scripts')
+        <script src="sweetalert2.all.min.js"></script>
+
+        <script>
+            Livewire.on('deleteUser', userId => {
+                Swal.fire({
+                    title: 'Estas seguro?',
+                    text: "No se podrá revertir!",
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#3085d6',
+                    cancelButtonColor: '#d33',
+                    confirmButtonText: 'Si, Eliminar!'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+
+                        Livewire.emitTo('admin.user-list', 'delete', userId);
+
+                        Swal.fire(
+                            'Eliminado!',
+                            'El Registro fue eliminado.',
+                            'success'
+                        )
+                    }
+                })
+            })
+        </script>
+    @endpush
+
 
 </div>

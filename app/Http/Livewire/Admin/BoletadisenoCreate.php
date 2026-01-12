@@ -74,14 +74,14 @@ class BoletadisenoCreate extends Component
 
         $this->validate(); // ✔ Ejecuta validaciones
 
-        $urlimage1 = Storage::disk('s3_public')->put('fe/' . $this->company->razonsocial . '/disenos', $this->image1, 'public');
+        $urlimage1 = Storage::disk('s3_public')->put('disenos-comprobantes/boletas', $this->image1, 'public');
 
 
         if ($this->image2) {
       
-            $urlimage2 = Storage::disk('s3')->put('fe/' . $this->company->razonsocial . '/disenos', $this->image2, 'public');
+            $urlimage2 = Storage::disk('s3_public')->put('disenos-comprobantes/boletas', $this->image2, 'public');
         } else {
-            $urlimage2 = 'fe/default/products/productdefault.jpg';
+            $urlimage2 = 'disenos-comprobantes/default.jpg';
         }
 
 

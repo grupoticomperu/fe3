@@ -118,9 +118,24 @@ class SunatService
         $this->see->setClaveSOL($this->company->ruc, $this->company->soluser, $this->company->solpass);
     }
 
+
     //para envio de guias, se envia con un api, esta es la conexión
     public function getSeeApi($company)
     {
+
+
+        $pem = Storage::disk('s3')->get($this->company->certificate_path);
+
+        // (Opcional pero recomendado) limpiar a solo CERT + PRIVATE KEY
+        preg_match('/-----BEGIN CERTIFICATE-----.*?-----END CERTIFICATE-----/s', $pem, $cert);
+        preg_match('/-----BEGIN (?:RSA )?PRIVATE KEY-----.*?-----END (?:RSA )?PRIVATE KEY-----/s', $pem, $key);
+
+        if (empty($cert[0]) || empty($key[0])) {
+            throw new \Exception('El PEM en S3 no contiene CERTIFICATE y PRIVATE KEY.');
+        }
+
+        $pemClean = $cert[0] . "\n" . $key[0];
+
 
         /* if (!Storage::exists('certificates/certificate_1.pem')) {
             throw new \Exception('Certificate file not found');
@@ -151,7 +166,8 @@ class SunatService
             $company->production ? $company->sol_user : "MODDATOS",
             $company->production ? $company->sol_pass : "MODDATOS"
             //)->setCertificate(Storage::get($company->cert_path));
-        )->setCertificate(Storage::get("certificates/LLAMAPECERTIFICADODEMO20447393302_cert_out.pem"));
+        )->setCertificate($pemClean);
+        //->setCertificate(Storage::get("certificates/LLAMAPECERTIFICADODEMO20447393302_cert_out.pem"));
         //$this->see->setCertificate(Storage::get("certificates/LLAMAPECERTIFICADODEMO20447393302_cert_out.pem"));
 
         // return $this->api;
@@ -515,6 +531,7 @@ class SunatService
             );
     }
 
+
     public function getCompany()
     {
         return (new Company())
@@ -524,9 +541,9 @@ class SunatService
             ->setAddress(
                 (new Address())
                     ->setUbigueo($this->company->ubigeo)
-                    ->setDepartamento("Lima")
-                    ->setProvincia("Lima")
-                    ->setDistrito("Lima")
+                    ->setDepartamento($this->company->department->name)
+                    ->setProvincia($this->company->province->name)
+                    ->setDistrito($this->company->district->name)
                     ->setUrbanizacion($this->company->urbanizacion)
                     ->setDireccion($this->company->direccion)
             );
@@ -976,7 +993,20 @@ class SunatService
         //$pdf->setPaper([0, 0, 212.625, 9999], 'portrait');
 
 
-        $pdf->setPaper('A4', 'portrait');
+        //$pdf->setPaper('A4', 'portrait');
+
+
+        if ($this->company->boletadiseno->description == 'ticket') {
+            $pdf->setPaper([0, 0, 212.625, 9999], 'portrait');
+        } else {
+            $pdf->setPaper('A4', 'portrait');
+        }
+
+
+
+
+
+
 
         try {
             $pdfContent = $pdf->output();
@@ -1134,12 +1164,12 @@ class SunatService
         // Generar el PDF utilizando Dompdf
         $pdf = Pdf::loadHTML($html);
 
-        if($this->company->guiadiseno->description == 'ticket'){
+        if ($this->company->guiadiseno->description == 'ticket') {
             $pdf->setPaper([0, 0, 212.625, 9999], 'portrait');
-        }else{
+        } else {
             $pdf->setPaper('A4', 'portrait');
         }
-        
+
         try {
             $pdfContent = $pdf->output();
 

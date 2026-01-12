@@ -62,7 +62,7 @@ return new class extends Migration
             $table->unsignedBigInteger('tipoafectacion_id')->nullable();
             $table->foreign('tipoafectacion_id')->references('id')->on('tipoafectacions')->onDelete('set null');
 
-            $table->boolean('esbolsa')->default(0);
+            //$table->boolean('esbolsa')->default(0);
             $table->boolean('detraccion')->nullable();
             $table->boolean('percepcion')->nullable();
 

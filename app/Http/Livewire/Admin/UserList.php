@@ -35,6 +35,9 @@ class UserList extends Component
     ];
 
 
+    protected $listeners = ['delete' => 'delete'];
+
+
     // public function mount(){
     // $this->identificador = rand();
     // $this->user = new User();//se hace para inicializar el objeto e indicar que image es
@@ -73,7 +76,8 @@ class UserList extends Component
             /*  $users = User::where('name', 'like', '%' .$this->search. '%')
                 ->orderBy($this->sort, $this->direction)
                 ->paginate($this->cant); */
-            $users = User::where('name', 'like', '%' . $this->search . '%')
+            $users = User::where('id', '!=', 1)
+                ->where('name', 'like', '%' . $this->search . '%')
                 ->whereHas('employee.company', function ($query) {
                     // Puedes ajustar la lógica para obtener la empresa deseada,
                     // por ejemplo, puedes usar el ID de la empresa actual del usuario autenticado.
@@ -122,11 +126,49 @@ class UserList extends Component
         ]);
     }
 
-    public function delete(User $user)
+    /* public function delete(User $user)
+    {
+        
+        $user->delete();
+    } */
+
+
+
+    public function delete($userId)
     {
         /* $this->authorize('delete', $user); */
+        // 🔒 No borrar al usuario protegido
+        if ((int) $userId === 2) {
+            $this->emit('alert', 'No se puede eliminar este usuario.');
+            return;
+        }
+
+        // (Opcional) Evitar borrar el id=1 por seguridad
+        if ((int) $userId === 1) {
+            $this->emit('alert', 'Acción no permitida.');
+            return;
+        }
+
+        $user = User::findOrFail($userId);
         $user->delete();
+
+        // Si estás paginando, a veces conviene refrescar
+        $this->resetPage();
+
+        // (Opcional) notificar
+        // $this->emit('alert', 'Usuario eliminado');
     }
+
+
+
+
+
+
+
+
+
+
+
 
     /*     public function edit(User $user){
         $this->authorize('update', $user);

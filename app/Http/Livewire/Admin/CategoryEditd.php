@@ -151,7 +151,7 @@ class CategoryEditd extends Component
              //$this->product->image = Storage::url($this->image->store('products', 'public'));
              //$image1 = $this->product->image;
             // Storage::disk('s3')->delete([$this->product->image]);
-            $this->category->image = Storage::disk('s3')->put('fe/'.$this->company->id.'/categories', $this->image , 'public');
+            $this->category->image = Storage::disk('s3_public')->put('fe/'.$this->company->id.'/categories', $this->image , 'public');
          }else{
             // dd($this->image);
             $this->category->image = $this->imageback;//no hay cambios en la imagen

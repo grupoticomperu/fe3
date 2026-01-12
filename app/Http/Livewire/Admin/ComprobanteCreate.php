@@ -121,6 +121,7 @@ class ComprobanteCreate extends Component
             // $this->msg = 'El producto no tiene precio';
             // $this->emit('alert', $this->msg);
         } else {
+            $isbolsa = ((int) $product->category_id === 1) ? 1 : 0;//estamos agregando bolsa
             $this->addToCartbd(
                 $product->id,
                 $product->codigobarras,
@@ -131,7 +132,8 @@ class ComprobanteCreate extends Component
                 $product->saleprice,
                 $product->mtovalorgratuito,
                 $product->mtovalorunitario, //precio del producto sin igv
-                $product->esbolsa,
+                //$product->esbolsa,
+                $isbolsa,
                 $quantity
             );
             //$this->total = $this->getTotalFromTemporals();
@@ -169,6 +171,7 @@ class ComprobanteCreate extends Component
             // $this->msg = 'El producto no tiene precio';
             // $this->emit('alert', $this->msg);
         } else {
+            $isbolsa = ((int) $product->category_id === 1) ? 1 : 0;//estamos agregando bolsa
             $this->addToCartbd(
                 $product->id,
                 $product->codigobarras,
@@ -179,7 +182,8 @@ class ComprobanteCreate extends Component
                 $product->saleprice,
                 $product->mtovalorgratuito,
                 $product->mtovalorunitario, //precio del producto sin igv
-                $product->esbolsa,
+                //$product->esbolsa,
+                $isbolsa,  
                 $quantity
             );
             //$this->total = $this->getTotalFromTemporals();
